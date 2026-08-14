@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>CKD Recognition & Screening Tool · Boehringer Ingelheim</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+KR:wght@500;700&family=Noto+Sans+Thai:wght@500;700&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --deep:#00201B; --dark:#00332A; --brand:#00A76F; --accent:#00E58A;
+    --bg:#F5F8F6; --card:#FFFFFF; --ink:#0C2420; --muted:#5C7269; --line:#DCE7E1;
+    --low:#0FA36B; --interm:#E1A027; --high:#DE7B34; --veryhigh:#D8484C; --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Inter','Noto Sans KR','Noto Sans Thai','Noto Sans SC',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased; padding-bottom:60px;
+  }
+  h1,h2,h3,.display{ font-family:'Manrope','Noto Sans KR','Noto Sans Thai','Noto Sans SC',sans-serif; font-weight:800; letter-spacing:-0.01em; }
+  .mono{ font-family:'IBM Plex Mono',monospace; }
+
+  header.top{
+    background:linear-gradient(155deg,var(--deep) 0%, var(--dark) 65%, #014a3a 100%);
+    color:#fff; padding:20px 20px 24px; position:relative; overflow:hidden;
+  }
+  header.top::after{ content:""; position:absolute; right:-60px; top:-60px; width:220px; height:220px; border:1.5px solid rgba(0,229,138,0.25); border-radius:50%; }
+  header.top::before{ content:""; position:absolute; right:10px; top:40px; width:120px; height:120px; border:1.5px solid rgba(0,229,138,0.18); border-radius:50%; }
+  .top-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:18px; position:relative; z-index:1; }
+  .bi-logo-img{ height:28px; width:auto; display:block; }
+  select#langSelect{
+    background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.3);
+    border-radius:8px; padding:7px 10px; font-size:12.5px; font-family:'Inter',sans-serif; font-weight:600;
+  }
+  select#langSelect option{ color:#0C2420; }
+  header.top h1{ font-size:23px; margin:0 0 6px; max-width:560px; position:relative; z-index:1; }
+  header.top p.sub{ margin:0; color:rgba(255,255,255,0.72); font-size:13px; max-width:480px; position:relative; z-index:1; }
+  .tag-forward{ position:absolute; right:18px; bottom:14px; font-family:'Manrope',sans-serif; font-style:italic; font-weight:800; color:var(--accent); font-size:12.5px; }
+
+  nav.tabs{ display:flex; gap:8px; padding:14px 16px 0; max-width:900px; margin:0 auto; }
+  nav.tabs button{
+    flex:1; border:none; background:#fff; color:var(--muted); font-weight:700; font-size:13.5px;
+    padding:12px 10px; border-radius:12px; border:1px solid var(--line); cursor:pointer;
+  }
+  nav.tabs button.active{ background:var(--dark); color:#fff; border-color:var(--dark); }
+
+  main{ max-width:900px; margin:0 auto; padding:18px 16px 0; }
+
+  .edu-card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px 20px 22px; margin-bottom:16px; }
+  .edu-card h2{ font-size:17px; margin:0 0 10px; color:var(--dark); }
+  .edu-card h3{ font-size:13.5px; margin:16px 0 8px; color:var(--brand); text-transform:uppercase; letter-spacing:0.03em; }
+  .edu-card p{ font-size:14px; line-height:1.75; color:var(--ink); margin:0 0 4px; }
+  .edu-card ul{ margin:0; padding-left:20px; }
+  .edu-card ul li{ font-size:14px; line-height:1.9; color:var(--ink); }
+
+  .s4-item{ border-top:1px dashed var(--line); padding-top:12px; margin-top:12px; }
+  .s4-item:first-child{ border-top:none; padding-top:0; margin-top:0; }
+  .s4-item h4{ font-size:14px; margin:0 0 4px; color:var(--dark); font-family:'Manrope',sans-serif; font-weight:700; }
+  .s4-item p{ font-size:13px; color:var(--muted); line-height:1.7; margin:0; }
+
+  .cta-row{ text-align:center; margin:6px 0 22px; }
+  .cta-btn{
+    background:var(--dark); color:#fff; border:none; padding:14px 26px; border-radius:12px;
+    font-weight:700; font-size:14.5px; cursor:pointer; font-family:'Inter',sans-serif;
+  }
+  .cta-btn:hover{ background:var(--deep); }
+
+  .risk-item{ display:flex; align-items:flex-start; gap:10px; padding:11px 0; border-bottom:1px solid var(--line); }
+  .risk-item:last-child{ border-bottom:none; }
+  .risk-item input[type=checkbox]{ width:19px; height:19px; margin-top:1px; accent-color:var(--brand); flex:none; }
+  .risk-item label{ font-size:14px; line-height:1.5; color:var(--ink); cursor:pointer; }
+
+  .grid{ display:grid; grid-template-columns:1.1fr 1fr; gap:18px; align-items:start; }
+  @media (max-width:800px){ .grid{ grid-template-columns:1fr; } }
+
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px 18px 20px; margin-bottom:16px; }
+  .card h2{ font-size:15px; margin:0 0 4px; color:var(--dark); }
+  .card p.hint{ margin:0 0 14px; color:var(--muted); font-size:12.5px; line-height:1.5; }
+
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+  .field{ display:flex; flex-direction:column; gap:5px; }
+  .field.full{ grid-column:1 / -1; }
+  .field label{ font-size:12px; font-weight:600; color:var(--ink); }
+  .field input[type=number]{
+    border:1.5px solid var(--line); border-radius:10px; padding:10px 11px; font-size:15px;
+    font-family:'IBM Plex Mono',monospace; color:var(--ink); background:#FBFCFB; outline:none; width:100%;
+  }
+  .field input:focus{ border-color:var(--brand); background:#fff; }
+
+  .seg{ display:flex; border:1.5px solid var(--line); border-radius:10px; overflow:hidden; }
+  .seg button{ flex:1; border:none; background:#FBFCFB; padding:10px; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; border-right:1.5px solid var(--line); }
+  .seg button:last-child{ border-right:none; }
+  .seg button.on{ background:var(--dark); color:#fff; }
+
+  .divider{ border:none; border-top:1px dashed var(--line); margin:16px 0; }
+
+  .results .card{ background:linear-gradient(160deg,var(--deep), var(--dark)); color:#fff; border:none; position:sticky; top:14px; }
+  .results .card h2{ color:var(--accent); }
+  .results .card p.hint{ color:rgba(255,255,255,0.6); }
+
+  .grid-viz{ display:grid; grid-template-columns:auto repeat(3, 1fr); gap:4px; margin:10px 0 6px; }
+  .grid-viz .lbl{ display:flex; align-items:center; justify-content:center; font-size:10px; color:rgba(255,255,255,0.55); font-family:'IBM Plex Mono',monospace; padding:4px 2px; }
+  .grid-viz .cell{ border-radius:6px; padding:8px 2px; text-align:center; font-size:10.5px; font-weight:700; font-family:'IBM Plex Mono',monospace; color:rgba(255,255,255,0.35); background:rgba(255,255,255,0.05); }
+  .grid-viz .cell.active{ color:#fff; box-shadow:0 0 0 2px #fff inset; }
+  .cell-low{ background:rgba(15,163,107,0.35); }
+  .cell-moderate{ background:rgba(225,160,39,0.35); }
+  .cell-high{ background:rgba(222,123,52,0.4); }
+  .cell-veryhigh{ background:rgba(216,72,76,0.45); }
+
+  .risk-badge{ display:flex; flex-direction:column; align-items:center; margin:14px 0 10px; }
+  .risk-badge .num{ font-family:'IBM Plex Mono',monospace; font-size:13px; color:rgba(255,255,255,0.6); margin-bottom:6px; }
+  .risk-cat{ font-family:'Manrope',sans-serif; font-weight:800; font-size:15px; padding:6px 16px; border-radius:999px; }
+  .cat-low{ background:rgba(15,163,107,0.18); color:#5FEBB2; border:1px solid rgba(95,235,178,0.4); }
+  .cat-moderate{ background:rgba(225,160,39,0.18); color:#F5C15E; border:1px solid rgba(245,193,94,0.4); }
+  .cat-high{ background:rgba(222,123,52,0.18); color:#F5A15E; border:1px solid rgba(245,161,94,0.4); }
+  .cat-veryhigh{ background:rgba(216,72,76,0.18); color:#F58D90; border:1px solid rgba(245,141,144,0.4); }
+  .cat-neutral{ background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.65); border:1px solid rgba(255,255,255,0.2); }
+
+  .action-box{
+    margin-top:14px; font-size:13px; line-height:1.7; color:#fff; background:rgba(255,255,255,0.09);
+    border-radius:10px; padding:13px 14px; border-left:3px solid var(--accent);
+  }
+  .action-box b{ display:block; margin-bottom:4px; font-size:13.5px; }
+
+  .result-line{ display:flex; justify-content:space-between; align-items:baseline; padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.1); font-size:13px; }
+  .result-line:last-child{ border-bottom:none; }
+  .result-line .lbl{ color:rgba(255,255,255,0.65); }
+  .result-line .val{ font-family:'IBM Plex Mono',monospace; font-weight:600; color:#fff; }
+
+  .threshold-note{ font-size:11px; color:var(--muted); line-height:1.6; margin-top:14px; padding-top:12px; border-top:1px dashed var(--line); }
+
+  footer{ max-width:900px; margin:26px auto 0; padding:16px 16px 0; font-size:11px; color:var(--muted); line-height:1.7; border-top:1px solid var(--line); }
+  footer b{ color:var(--ink); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-row">
+    <img id="headerLogo" class="bi-logo-img" alt="Boehringer Ingelheim">
+    <select id="langSelect">
+      <option value="en">English</option>
+      <option value="ko">한국어</option>
+      <option value="th">ไทย</option>
+      <option value="vi">Tiếng Việt</option>
+      <option value="zh">中文</option>
+      <option value="ms">Bahasa Malaysia</option>
+    </select>
+  </div>
+  <h1 data-i18n="app_title"></h1>
+  <p class="sub" data-i18n="app_subtitle"></p>
+  <span class="tag-forward">Life forward</span>
+</header>
+
+<nav class="tabs">
+  <button data-tab="learn" class="active" data-i18n="nav_learn"></button>
+  <button data-tab="symptoms" data-i18n="nav_symptoms"></button>
+  <button data-tab="calc" data-i18n="nav_calc"></button>
+</nav>
+
+<main>
+
+<section id="panel-learn" class="panel">
+  <div class="edu-card">
+    <h2 data-i18n="s1_title"></h2>
+    <p data-i18n="s1_body"></p>
+  </div>
+
+  <div class="edu-card">
+    <h2 data-i18n="s2_title"></h2>
+    <p data-i18n="s2_body"></p>
+  </div>
+
+  <div class="edu-card">
+    <h2 data-i18n="s3_title"></h2>
+    <p data-i18n="s3_intro"></p>
+    <h3 data-i18n="s3_symptoms_title"></h3>
+    <ul id="s3_symptoms_list"></ul>
+    <h3 data-i18n="s3_risk_title"></h3>
+    <ul id="s3_risk_list"></ul>
+    <h3 data-i18n="s3_missed_title"></h3>
+    <p data-i18n="s3_missed_body"></p>
+  </div>
+
+  <div class="edu-card">
+    <h2 data-i18n="screening_title"></h2>
+    <p data-i18n="screening_intro"></p>
+    <h3 data-i18n="screening_egfr_title"></h3>
+    <p data-i18n="screening_egfr_body"></p>
+    <h3 data-i18n="screening_uacr_title"></h3>
+    <p data-i18n="screening_uacr_body"></p>
+  </div>
+
+  <div class="edu-card">
+    <h2 data-i18n="s4_title"></h2>
+    <p data-i18n="s4_intro"></p>
+    <div id="s4_items"></div>
+  </div>
+
+  <div class="cta-row">
+    <button class="cta-btn" id="gotoCalcBtn" data-i18n="cta_calc"></button>
+  </div>
+</section>
+
+<section id="panel-symptoms" class="panel" style="display:none;">
+  <div class="edu-card">
+    <h2 data-i18n="symptom_checker_title"></h2>
+    <p data-i18n="symptom_checker_intro"></p>
+    <div id="symptomCheckboxList" style="margin-top:14px;"></div>
+  </div>
+  <div class="edu-card" id="symptomPromptCard">
+    <div id="symptomPromptBox" style="font-size:14px; line-height:1.7; padding:14px 16px; border-radius:10px; border-left:4px solid var(--muted); background:#F5F8F6;"></div>
+  </div>
+  <div class="cta-row">
+    <button class="cta-btn" id="gotoCalcFromSymptomsBtn" data-i18n="cta_calc2"></button>
+  </div>
+</section>
+
+<section id="panel-calc" class="panel" style="display:none;">
+<div class="grid">
+  <div>
+    <div class="card">
+      <h2 data-i18n="calc_title"></h2>
+      <p class="hint" data-i18n="calc_subtitle"></p>
+
+      <div class="field-row">
+        <div class="field"><label data-i18n="age_label"></label><input type="number" id="age" placeholder="e.g. 65"></div>
+        <div class="field">
+          <label data-i18n="sex_label"></label>
+          <div class="seg" id="sexSeg"><button data-v="m" data-i18n="male"></button><button data-v="f" data-i18n="female"></button></div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label data-i18n="creatinine_label"></label><input type="number" id="creatinine" step="0.01" placeholder="e.g. 0.9"></div>
+        <div class="field">
+          <label data-i18n="egfr_label"></label>
+          <div class="mono" id="egfrOut" style="font-size:15px;color:var(--brand);font-weight:600;padding-top:8px;">—</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="field full">
+        <label data-i18n="uacr_label"></label>
+        <input type="number" id="uacr" placeholder="e.g. 15">
+      </div>
+      <p class="hint" style="margin-top:8px;" data-i18n="uacr_hint"></p>
+    </div>
+  </div>
+
+  <div class="results">
+    <div class="card">
+      <h2 data-i18n="result_title"></h2>
+
+      <div class="risk-badge">
+        <div class="num" id="ga_label">— · —</div>
+        <div class="risk-cat cat-neutral" id="riskCat">—</div>
+      </div>
+
+      <div class="grid-viz" id="gridViz"></div>
+
+      <div class="action-box" id="actionBox"></div>
+
+      <div class="result-line"><span class="lbl" id="egfr_result_lbl"></span><span class="val" id="egfrResultVal">— mL/min/1.73m²</span></div>
+      <div class="result-line"><span class="lbl" id="uacr_result_lbl"></span><span class="val" id="uacrResultVal">— mg/g</span></div>
+
+      <div class="threshold-note" data-i18n="threshold_note"></div>
+    </div>
+  </div>
+</div>
+</section>
+
+</main>
+
+<footer>
+  <p id="footerDisclaimer"></p>
+  <p><b>References:</b> Kidney Disease: Improving Global Outcomes (KDIGO) CKD Work Group. KDIGO 2024 Clinical Practice Guideline for the Evaluation and Management of Chronic Kidney Disease. Kidney Int. 2024;105(4S):S117–S314. Levey AS, Stevens LA, Coresh J, et al. New creatinine- and cystatin C-based equations to estimate GFR without race. N Engl J Med. 2021;385(19):1737–1749. doi:10.1056/NEJMoa2102953. Asian Pacific Society of Nephrology. Clinical practice guideline on diabetic kidney disease. Nephrology (Carlton). 2020;25(Suppl 2):12–45. Pollock C, Moon JY, Ngoc Ha LP, et al. Framework of guidelines for management of CKD in Asia. Kidney Int Rep. 2023;9(4):752–790. doi:10.1016/j.ekir.2023.12.010. Kidney Health Australia. Chronic Kidney Disease (CKD) Management in Primary Care handbook.</p>
+</footer>
+
+<script>
+function $(id){ return document.getElementById(id); }
+
+const T = {
+en: {
+  app_title: "CKD Recognition & Screening Tool",
+  app_subtitle: "For Primary Care Practitioners · Medical Affairs Education & Decision Support",
+  nav_learn: "Learn",
+  nav_symptoms: "Symptom Checker",
+  nav_calc: "Screen My Patient",
+  cta_calc: "Continue to Symptom Checker →",
+  cta_calc2: "Continue to the Screening Calculator →",
+  s1_title: "What is CKD?",
+  s1_body: "Chronic kidney disease (CKD) is defined as abnormalities of kidney structure or function, present for at least three months, with implications for health. It is diagnosed and staged using two independent measures: glomerular filtration rate (GFR), which reflects how well the kidneys filter blood, and albuminuria, which reflects damage to the kidney's filtering units. CKD is classified using both together \u2014 GFR categories G1 through G5, and albuminuria categories A1 through A3 \u2014 because each carries risk information the other does not. A patient can have reduced GFR with normal albuminuria, or significant albuminuria with preserved GFR; both patterns carry elevated risk of kidney failure and cardiovascular events, through different pathways.",
+  s2_title: "Why CKD Is Critical in Asia-Pacific",
+  s2_body: "CKD affects a large and growing share of adults across Asia, driven by the same forces reshaping disease burden region-wide: rising rates of diabetes, hypertension, obesity, and cardiovascular disease, combined with an aging population. Regional analyses estimate the burden of CKD in Asia at several hundred million people, with substantial variation between countries and the highest burden concentrated in the most populous nations. Because early-stage CKD is largely silent, most of this burden goes undetected until later stages, when treatment options narrow and the risk of kidney failure and cardiovascular complications rises sharply. Nephrology capacity is also unevenly distributed across the region, making early detection and risk stratification in primary care \u2014 rather than late referral \u2014 especially important for outcomes.",
+  s3_title: "How to Recognize CKD",
+  s3_intro: "CKD is often called a silent disease: most patients have no symptoms in the early stages, and by the time symptoms appear, significant kidney function may already be lost. Recognizing at-risk patients \u2014 rather than waiting for symptoms \u2014 is the most reliable path to early detection.",
+  s3_symptoms_title: "Symptoms (usually only in later stages)",
+  s3_symptoms: ["Fatigue or low energy","Swelling in the ankles, legs, or around the eyes","Foamy or bubbly urine","Changes in urination \u2014 more frequent, especially at night","Poor appetite, nausea, or a metallic taste","Persistent itching","Difficulty concentrating"],
+  s3_risk_title: "Who is at risk",
+  s3_risk: ["Diabetes (type 1 or type 2)","Hypertension","Cardiovascular disease","Age over 60","Obesity","Family history of kidney disease","Prior episode of acute kidney injury","Long-term use of nephrotoxic medications (e.g. regular NSAID use)"],
+  s3_missed_title: "Why it gets missed",
+  s3_missed_body: "Because CKD is asymptomatic through most of its early course, it is easy to overlook in patients who otherwise feel well. The most useful shift for primary care: any patient with diabetes, hypertension, cardiovascular disease, or other risk factors above should be proactively tested \u2014 not just those who report symptoms. By the time symptoms appear, CKD has often already progressed to a later stage.",
+  screening_title: "Screening for CKD",
+  screening_intro: "CKD screening relies on two tests used together: estimated glomerular filtration rate (eGFR) and urine albumin-to-creatinine ratio (uACR). Neither alone gives the full picture \u2014 KDIGO guidance is explicit that both should be used together to test people at risk for and with CKD.",
+  screening_egfr_title: "eGFR \u2014 usually already available",
+  screening_egfr_body: "eGFR is not directly measured \u2014 it is calculated from serum creatinine using a validated equation that also factors in age and sex. The current recommended standard is the 2021 CKD-EPI creatinine equation, a race-free formula endorsed by KDIGO, the National Kidney Foundation, and the American Society of Nephrology. Because creatinine is part of routine blood panels ordered for many other reasons, eGFR is often already available in the chart \u2014 or can be calculated directly from a creatinine result using the calculator below.",
+  screening_uacr_title: "uACR \u2014 the test that gets missed",
+  screening_uacr_body: "Unlike eGFR, uACR does not happen automatically \u2014 it requires a deliberate order. Testing rates for uACR consistently lag well behind eGFR testing rates in at-risk populations, even though it is the more sensitive test for detecting early kidney damage in conditions like diabetic kidney disease, where albuminuria often appears before GFR declines. A urine dipstick can be used as a faster, more accessible alternative, but it is less sensitive and can miss the moderately increased albuminuria range that uACR is designed to catch.",
+  s4_title: "Guidelines & Resources for PCPs",
+  s4_intro: "This tool draws on the following international and regional resources. Primary care teams are encouraged to consult these directly for full clinical detail.",
+  s4_items: [
+    {title:"KDIGO 2024 Clinical Practice Guideline for CKD", body:"The Kidney Disease: Improving Global Outcomes (KDIGO) 2024 guideline is the leading international reference for CKD evaluation and management, defining the GFR and albuminuria categories used to classify CKD and assess risk that this tool is built on.", url:"https://kdigo.org/guidelines/ckd-evaluation-and-management/"},
+    {title:"Framework of Guidelines for Management of CKD in Asia", body:"Developed by a multinational panel of Asia-Pacific nephrologists, this framework adapts international CKD guidelines to the region's epidemiology, healthcare resources, and referral capacity \u2014 addressing gaps that limit uptake of international guidelines in many Asian healthcare settings.", url:"https://www.kireports.org/article/S2468-0249(23)01632-7/fulltext"},
+    {title:"Kidney Health Australia \u2014 CKD Management in Primary Care Handbook", body:"Endorsed by the Royal Australian College of General Practitioners and Australian and New Zealand nephrology bodies, this handbook provides practical, GP-focused guidance on detecting, managing, and referring patients with CKD in the Australian primary care setting.", url:"https://kidney.org.au/health-professionals/ckd-management-handbook/"}
+  ],
+  symptom_checker_title: "Does this patient have any of these risk factors or symptoms?",
+  symptom_checker_intro: "Select all that apply. CKD risk is driven mainly by underlying conditions rather than symptoms \u2014 this is a quick prompt, not a scored assessment.",
+  symptom_prompt_positive: "This risk profile is consistent with a patient who should be screened for CKD, even in the absence of symptoms. Consider ordering eGFR and uACR now.",
+  symptom_prompt_negative: "No major risk factors selected. If clinical suspicion remains for another reason, you can still proceed to screening.",
+  calc_title: "CKD Risk Grid Calculator",
+  calc_subtitle: "Based on the KDIGO GFR (G1\u2013G5) and albuminuria (A1\u2013A3) categories",
+  age_label: "Age (years)",
+  sex_label: "Sex",
+  male: "Male",
+  female: "Female",
+  creatinine_label: "Serum creatinine (mg/dL)",
+  egfr_label: "Calculated eGFR",
+  uacr_label: "Urine ACR (mg/g)",
+  uacr_hint: "If only a dipstick result is available, note that a negative or trace dipstick does not reliably rule out moderately increased albuminuria (A2) \u2014 uACR is the more sensitive test.",
+  result_title: "Result & Recommended Action",
+  awaiting: "Enter all patient values to calculate.",
+  egfr_result_lbl: "eGFR category",
+  uacr_result_lbl: "Albuminuria category",
+  cat_low: "Low risk",
+  cat_moderate: "Moderately increased risk",
+  cat_high: "High risk",
+  cat_veryhigh: "Very high risk",
+  action_low: "Low risk on the GFR/albuminuria grid. If this is the only marker of kidney health checked and there is no other evidence of kidney damage, this does not meet criteria for a CKD diagnosis. Continue routine risk-factor management.",
+  action_moderate: "Moderately increased risk. Manage in primary care: address underlying risk factors (blood pressure, glycaemic control), and repeat testing annually.",
+  action_high: "High risk. Continue primary care management with closer monitoring; consider nephrology referral depending on trajectory, cause, and comorbidities.",
+  action_veryhigh: "Very high risk. Refer to nephrology for further evaluation, in line with KDIGO's risk-based referral guidance.",
+  threshold_note: "Risk categories (Low / Moderately increased / High / Very high) follow the published KDIGO GFR \u00d7 albuminuria classification. This tool uses an original grid design and does not reproduce KDIGO's copyrighted figure. The eGFR calculation uses the 2021 CKD-EPI creatinine equation and is not validated for pregnancy, extremes of muscle mass, acute kidney injury, or patients under 18. This tool supports, and does not replace, clinical judgment.",
+  footer_disclaimer: "Disclaimer: This tool was developed by the Boehringer Ingelheim Medical Affairs team. The screening grid is based on the KDIGO CKD classification, a validated, internationally recognized staging system, and the educational content draws on highly reputable, publicly available references and regional guideline resources. References publicly available guidelines and classification systems; this is not an official partnership with the cited organizations. It is not a substitute for clinical judgement or current regional guidelines. Verify all inputs and outputs before use in patient care."
+},
+ko: {
+  app_title: "CKD \uc778\uc9c0 \ubc0f \uc120\ubcc4\uac80\uc0ac \ub3c4\uad6c",
+  app_subtitle: "1\ucc28 \uc9c4\ub8cc\uc758\ub97c \uc704\ud55c \u00b7 \uc758\ud559\ubd80 \uad50\uc721 \ubc0f \uc758\uc0ac\uacb0\uc815 \uc9c0\uc6d0",
+  nav_learn: "\ud559\uc2b5",
+  nav_symptoms: "\uc99d\uc0c1 \uccb4\ud06c\ub9ac\uc2a4\ud2b8",
+  nav_calc: "\ud658\uc790 \uc120\ubcc4\uac80\uc0ac",
+  cta_calc: "\uc99d\uc0c1 \uccb4\ud06c\ub9ac\uc2a4\ud2b8\ub85c \uc774\ub3d9 \u2192",
+  cta_calc2: "\uc120\ubcc4 \uacc4\uc0b0\uae30\ub85c \uc774\ub3d9 \u2192",
+  s1_title: "\ub9cc\uc131 \uc2e0\uc7a5\ubcd1(CKD)\uc774\ub780 \ubb34\uc5c7\uc778\uac00?",
+  s1_body: "\ub9cc\uc131 \uc2e0\uc7a5\ubcd1(CKD)\uc740 \uc2e0\uc7a5 \uad6c\uc870 \ub610\ub294 \uae30\ub2a5\uc758 \uc774\uc0c1\uc774 \ucd5c\uc18c 3\uac1c\uc6d4 \uc774\uc0c1 \uc9c0\uc18d\ub418\uba70 \uac74\uac15\uc5d0 \uc601\ud5a5\uc744 \ubbf8\uce58\ub294 \uc0c1\ud0dc\ub85c \uc815\uc758\ub429\ub2c8\ub2e4. \uc774\ub294 \uc2e0\uc7a5\uc774 \ud600\uc744 \uc5bc\ub9c8\ub098 \uc798 \uc5ec\uacfc\ud558\ub294\uc9c0\ub97c \ubc18\uc601\ud558\ub294 \uc0ac\uad00\ub840\uc5ec\uacfc\uc728(GFR)\uacfc, \uc2e0\uc7a5\uc758 \uc5ec\uacfc \ub2e8\uc704 \uc190\uc0c1\uc744 \ubc18\uc601\ud558\ub294 \ub2e8\ubc31\ub2c8\ub7c9\uc774\ub77c\ub294 \ub450 \uac00\uc9c0 \ub3c5\ub9bd\uc801\uc778 \uce21\uc815\uac12\uc744 \ud1b5\ud574 \uc9c4\ub2e8\ub418\uace0 \ubcd1\uae30\uac00 \uacb0\uc815\ub429\ub2c8\ub2e4. CKD\ub294 \uc774 \ub458 \ubaa8\ub450\ub97c \ud568\uaed8 \uc0ac\uc6a9\ud558\uc5ec \ubd84\ub958\ub418\uba70 \u2014 GFR \ubc94\uc8fc G1\ubd80\ud130 G5\uae4c\uc9c0, \ub2e8\ubc31\ub2c8\ub7c9 \ubc94\uc8fc A1\ubd80\ud130 A3\uae4c\uc9c0 \u2014 \uac01\uac01\uc774 \uc11c\ub85c \ub2e4\ub978 \uc704\ud5d8 \uc815\ubcf4\ub97c \uc81c\uacf5\ud558\uae30 \ub54c\ubb38\uc785\ub2c8\ub2e4. \ud658\uc790\ub294 GFR\uac00 \uac10\uc18c\ud558\uba74\uc11c \ub2e8\ubc31\ub2c8\ub7c9\uc740 \uc815\uc0c1\uc77c \uc218\ub3c4 \uc788\uace0, GFR\uc740 \ubcf4\uc874\ub418\uba74\uc11c \uc0c1\ub2f9\ud55c \ub2e8\ubc31\ub2c8\ub7c9\uc744 \ubcf4\uc77c \uc218\ub3c4 \uc788\uc73c\uba70, \uc774 \ub450 \uac00\uc9c0 \uc591\uc0c1\uc740 \uc11c\ub85c \ub2e4\ub978 \uacbd\ub85c\ub97c \ud1b5\ud574 \uc2e0\ubd80\uc804 \ubc0f \uc2ec\ud608\uad00 \uc774\ubca4\ud2b8 \uc704\ud5d8\uc744 \ub192\uc785\ub2c8\ub2e4.",
+  s2_title: "\uc544\uc2dc\uc544\ud0dc\ud3c9\uc591 \uc9c0\uc5ed\uc5d0\uc11c CKD\uac00 \uc911\uc694\ud55c \uc774\uc720",
+  s2_body: "CKD\ub294 \uc544\uc2dc\uc544 \uc804\uc5ed\uc5d0\uc11c \ub9ce\uc740 \uc218\uc758 \uc131\uc778\uc5d0\uac8c \uc601\ud5a5\uc744 \ubbf8\uce58\uba70 \uadf8 \uaddc\ubaa8\uac00 \uacc4\uc18d \uc99d\uac00\ud558\uace0 \uc788\uc2b5\ub2c8\ub2e4 \u2014 \uc774\ub294 \uc9c0\uc5ed \uc804\uccb4\uc758 \uc9c8\ubcd1 \ubd80\ub2f4\uc744 \uc7ac\ud3b8\ud558\ub294 \ub3d9\uc77c\ud55c \uc694\uc778\ub4e4, \uc989 \ub2f9\ub1e8\ubcd1, \uace0\ud608\uc555, \ube44\ub9cc, \uc2ec\ud608\uad00 \uc9c8\ud658\uc758 \uc99d\uac00\uc640 \uace0\ub839\ud654\uc5d0 \uc758\ud574 \ucd09\ubc1c\ub429\ub2c8\ub2e4. \uc9c0\uc5ed \ubd84\uc11d\uc5d0 \ub530\ub974\uba74 \uc544\uc2dc\uc544\uc5d0\uc11c CKD \ubd80\ub2f4\uc740 \uc218\uc5b5 \uba85\uc5d0 \ub2ec\ud558\uba70, \uad6d\uac00\uac04 \ud3b8\ucc28\uac00 \ud06c\uace0 \uc778\uad6c\uac00 \uac00\uc7a5 \ub9ce\uc740 \uad6d\uac00\ub4e4\uc5d0 \uc9d1\uc911\ub418\uc5b4 \uc788\uc2b5\ub2c8\ub2e4. \ucd08\uae30 CKD\ub294 \ub300\ubd80\ubd84 \ubb34\uc99d\uc0c1\uc774\uae30 \ub54c\ubb38\uc5d0, \uc774 \ubd80\ub2f4\uc758 \ub300\ubd80\ubd84\uc740 \uce58\ub8cc \uc635\uc158\uc774 \uc88b\ace0 \uc2e0\ubd80\uc804 \ubc0f \uc2ec\ud608\uad00 \ud569\ubcd1\uc99d \uc704\ud5d8\uc774 \uae09\uaca9\ud788 \uc99d\uac00\ud558\ub294 \ud6c4\uae30 \ub2e8\uacc4\uae4c\uc9c0 \ubc1c\uacac\ub418\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \uc2e0\uc7a5\ub0b4\uacfc \uc758\ub8cc \uc790\uc6d0\ub3c4 \uc9c0\uc5ed\uc801\uc73c\ub85c \ubd88\uade0\ub4f1\ud558\uac8c \ubd84\ud3ec\ub418\uc5b4 \uc788\uc5b4, \ub2a6\uc740 \uc758\ub8b0\ubcf4\ub2e4\ub294 1\ucc28 \uc9c4\ub8cc\uc5d0\uc11c\uc758 \uc870\uae30 \ubc1c\uacac\uacfc \uc704\ud5d8\ub3c4 \ubd84\ub958\uac00 \uacb0\uacfc\uc5d0 \ud2b9\ubcc4\ud788 \uc911\uc694\ud569\ub2c8\ub2e4.",
+  s3_title: "CKD\ub97c \uc5b4\ub5bb\uac8c \uc778\uc9c0\ud560 \uac83\uc778\uac00",
+  s3_intro: "CKD\ub294 \uc885\uc885 '\uce68\ubb35\uc758 \uc9c8\ubcd1'\uc774\ub77c\uace0 \ubd88\ub9bd\ub2c8\ub2e4: \ub300\ubd80\ubd84\uc758 \ud658\uc790\ub294 \ucd08\uae30\uc5d0 \uc99d\uc0c1\uc774 \uc5c6\uc73c\uba70, \uc99d\uc0c1\uc774 \ub098\ud0c0\ub0a0 \uc904\uc74c \uc5d0\ub294 \uc774\ubbf8 \uc0c1\ub2f9\ud55c \uc2e0\uc7a5 \uae30\ub2a5\uc774 \uc190\uc2e4\ub418\uc5c8\uc744 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uc99d\uc0c1\uc744 \uae30\ub2e4\ub9ac\uae30\ubcf4\ub2e4 \uace0\uc704\ud5d8\uad70 \ud658\uc790\ub97c \uc778\uc9c0\ud558\ub294 \uac83\uc774 \uc870\uae30 \ubc1c\uacac\uc744 \uc704\ud55c \uac00\uc7a5 \uc2e0\ub8b0\ud560 \uc218 \uc788\ub294 \ubc29\ubc95\uc785\ub2c8\ub2e4.",
+  s3_symptoms_title: "\uc99d\uc0c1 (\ubcf4\ud1b5 \ud6c4\uae30 \ub2e8\uacc4\uc5d0\ub9cc \ub098\ud0c0\ub0a8)",
+  s3_symptoms: ["\ud53c\ub85c\uac10 \ub610\ub294 \uae30\ub825 \uc800\ud558","\ubc1c\ubaa9, \ub2e4\ub9ac, \ub610\ub294 \ub208 \uc8fc\ubcc0 \ubd80\uc885","\uac70\ud488\uc774 \uc774\ub294 \uc18c\ubcc0","\uc18c\ubcc0 \uc591\uc0c1 \ubcc0\ud654 \u2014 \ud2b9\ud788 \uc57c\uac04 \ube48\ub1e8","\uc2dd\uc695 \uc800\ud558, \uad6c\ud1a0\uac10, \ub610\ub294 \uae08\uc18d\ub9db","\uc9c0\uc18d\uc801\uc778 \uac00\uc885\uac10","\uc9d1\uc911\ub825 \uc800\ud558"],
+  s3_risk_title: "\uc704\ud5d8\uad70",
+  s3_risk: ["\ub2f9\ub1e8\ubcd1(1\ud615 \ub610\ub294 2\ud615)","\uace0\ud608\uc555","\uc2ec\ud600\uad00 \uc9c8\ud658","60\uc138 \uc774\uc0c1","\ube44\ub9cc","\uc2e0\uc7a5 \uc9c8\ud658 \uac00\uc871\ub825","\uae09\uc131 \uc2e0\uc190\uc0c1 \ubcd1\ub825","\uc7a5\uae30\uac04 \uc2e0\ub3c5\uc131 \uc57d\ubb3c \uc0ac\uc6a9 (\uc608: \uc9c0\uc18d\uc801\uc778 NSAID \uc0ac\uc6a9)"],
+  s3_missed_title: "\uc65c \ub193\uce58\uae30 \uc26c\uc6b4\uac00",
+  s3_missed_body: "CKD\ub294 \ucd08\uae30 \uacfc\uc815\uc758 \ub300\ubd80\ubd84\uc774 \ubb34\uc99d\uc0c1\uc774\uae30 \ub54c\ubb38\uc5d0 \uc0c1\ud0dc\uac00 \uc591\ud638\ud574 \ubcf4\uc774\ub294 \ud658\uc790\uc5d0\uac8c\uc11c\ub294 \uac04\uacfc\ub418\uae30 \uc27d\uc2b5\ub2c8\ub2e4. 1\ucc28 \uc9c4\ub8cc\uc5d0\uc11c \uac00\uc7a5 \uc720\uc6a9\ud55c \uad00\uc810 \uc804\ud658\uc740 \ub2e4\uc74c\uacfc \uac19\uc2b5\ub2c8\ub2e4: \ub2f9\ub1e8\ubcd1, \uace0\ud608\uc555, \uc2ec\ud600\uad00 \uc9c8\ud658 \ub4f1 \uc704\ud5d8 \uc694\uc778\uc774 \uc788\ub294 \ubaa8\ub4e0 \ud658\uc790\ub294 \uc99d\uc0c1\uc744 \ud638\uc18c\ud558\ub294 \ud658\uc790\ub9cc\uc774 \uc544\ub2c8\ub77c \uc801\uadf9\uc801\uc73c\ub85c \uac80\uc0ac\ub97c \ubc1b\uc544\uc57c \ud569\ub2c8\ub2e4. \uc99d\uc0c1\uc774 \ub098\ud0c0\ub0a0 \uc904\uc74c\uc5d0\ub294 \uc774\ubbf8 CKD\uac00 \ud6c4\uae30 \ub2e8\uacc4\ub85c \uc9c4\ud589\ub41c \uacbd\uc6b0\uac00 \ub9ce\uc2b5\ub2c8\ub2e4.",
+  screening_title: "CKD \uc120\ubcc4\uac80\uc0ac",
+  screening_intro: "CKD \uc120\ubcc4\uac80\uc0ac\ub294 \ucd94\uc815\uc0ac\uad00\ub840\uc5ec\uacfc\uc728(eGFR)\uacfc \uc694\uc911 \ub2e8\ubc31\uc9c0\ub7c9\ube44(uACR)\ub77c\ub294 \ub450 \uac00\uc9c0 \uac80\uc0ac\ub97c \ud568\uaed8 \uc0ac\uc6a9\ud558\ub294 \ub370 \uae30\ubc18\uc744 \ub461\ub2c8\ub2e4. \ub458 \uc911 \ud558\ub098\ub9cc\uc73c\ub85c\ub294 \uc804\uccb4\uc801\uc778 \uadf8\ub9bc\uc744 \ud30c\uc545\ud560 \uc218 \uc5c6\uc73c\uba70, KDIGO\ub294 CKD \uc704\ud5d8\uad70 \ubc0f \ud658\uc790\uc758 \uac80\uc0ac\uc5d0 \uc774 \ub458\uc744 \ud568\uaed8 \uc0ac\uc6a9\ud560 \uac83\uc744 \uba85\ud655\ud788 \uad8c\uace0\ud569\ub2c8\ub2e4.",
+  screening_egfr_title: "eGFR \u2014 \ubcf4\ud1b5 \uc774\ubbf8 \ud655\ubcf4 \uac00\ub2a5",
+  screening_egfr_body: "eGFR\uc740 \uc9c1\uc811 \uce21\uc815\ub418\ub294 \uac12\uc774 \uc544\ub2c8\ub77c, \ub098\uc774\uc640 \uc131\ubcc4\uc744 \ubc18\uc601\ud558\ub294 \uac80\uc99d\ub41c \uacf5\uc2dd\uc744 \uc0ac\uc6a9\ud558\uc5ec \ud608\uccad \ud06c\ub808\uc544\ud2f0\ub2cc\uc73c\ub85c\ubd80\ud130 \uacc4\uc0b0\ub429\ub2c8\ub2e4. \ud604\uc7ac \uad8c\uc7a5\ub418\ub294 \ud45c\uc900\uc740 KDIGO, \ubbf8\uad6d \uad6d\ub9bd\uc2e0\uc7a5\uc7ac\ub2e8(NKF), \ubbf8\uad6d\uc2e0\uc7a5\ud559\ud68c(ASN)\uac00 \uc9c0\uc9c0\ud558\ub294 \uc778\uc885 \ubcc0\uc218\uac00 \uc81c\uac70\ub41c 2021 CKD-EPI \ud06c\ub808\uc544\ud2f0\ub2cc \uacf5\uc2dd\uc785\ub2c8\ub2e4. \ud06c\ub808\uc544\ud2f0\ub2cc\uc740 \ub2e4\ub978 \ub2e4\uc591\ud55c \ubaa9\uc801\uc73c\ub85c \uc2dc\ud589\ub418\ub294 \uc77c\ubc18 \ud608\uc561 \uac80\uc0ac\uc758 \uc77c\ubd80\uc774\ubbc0\ub85c, eGFR\uc740 \uc774\ubbf8 \ucc28\ud2b8\uc5d0 \uae30\ub85d\ub418\uc5b4 \uc788\ub294 \uacbd\uc6b0\uac00 \ub9ce\uc73c\uba70, \uc544\ub798 \uacc4\uc0b0\uae30\ub97c \ud1b5\ud574 \ud06c\ub808\uc544\ud2f0\ub2cc \uacb0\uacfc\uc5d0\uc11c \uc9c1\uc811 \uacc4\uc0b0\ud560 \uc218\ub3c4 \uc788\uc2b5\ub2c8\ub2e4.",
+  screening_uacr_title: "uACR \u2014 \ub193\uce58\uae30 \uc26c\uc6b4 \uac80\uc0ac",
+  screening_uacr_body: "eGFR\uacfc \ub2ec\ub9ac uACR\uc740 \uc790\ub3d9\uc73c\ub85c \uc218\ud589\ub418\uc9c0 \uc54a\uc73c\uba70 \uc758\ub3c4\uc801\uc778 \uc624\ub354\uac00 \ud544\uc694\ud569\ub2c8\ub2e4. uACR\uc740 \ub2f9\ub1e8\ubcd1\uc131 \uc2e0\uc7a5\uc9c8\ud658\uacfc \uac19\uc774 \ub2e8\ubc31\ub2c8\ub7c9\uc774 \uc885\uc885 GFR \uac10\uc18c\ubcf4\ub2e4 \uba3c\uc800 \ub098\ud0c0\ub098\ub294 \uc9c8\ud658\uc5d0\uc11c \uc870\uae30 \uc2e0\uc7a5 \uc190\uc0c1\uc744 \uac10\uc9c0\ud558\ub294 \ub370 \ub354 \ubbfc\uac10\ud55c \uac80\uc0ac\uc784\uc5d0\ub3c4 \ubd88\uad6c\ud558\uace0, \uace0\uc704\ud5d8\uad70\uc5d0\uc11c\uc758 \uac80\uc0ac\uc728\uc774 eGFR\uc5d0 \ube44\ud574 \uc9c0\uc18d\uc801\uc73c\ub85c \ub0ae\uc2b5\ub2c8\ub2e4. \uc694 \uc2a4\ud2f1\uc740 \ub354 \ube60\ub974\uace0 \uc811\uadfc\uc131\uc774 \uc88b\uc740 \ub300\uc548\uc73c\ub85c \uc0ac\uc6a9\ub420 \uc218 \uc788\uc9c0\ub9cc, \ubbfc\uac10\ub3c4\uac00 \ub0ae\uc544 uACR\uc774 \ud3ec\ucc29\ud558\ub3c4\ub85d \uc124\uacc4\ub41c \uc911\ub4f1\ub3c4 \uc99d\uac00\ub41c \ub2e8\ubc31\ub2c8\ub7c9 \ubc94\uc704\ub97c \ub193\uce60 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+  s4_title: "1\ucc28 \uc9c4\ub8cc\uc758\ub97c \uc704\ud55c \uac00\uc774\ub4dc\ub77c\uc778 \ubc0f \uc790\ub8cc",
+  s4_intro: "\uc774 \ub3c4\uad6c\ub294 \ub2e4\uc74c \uad6d\uc81c \ubc0f \uc9c0\uc5ed \uc790\ub8cc\ub97c \ucc38\uace0\ud558\uc5ec \uac1c\ubc1c\ub418\uc5c8\uc2b5\ub2c8\ub2e4. 1\ucc28 \uc9c4\ub8cc\ud300\uc740 \uc790\uc138\ud55c \uc784\uc0c1 \uc815\ubcf4\ub97c \uc704\ud574 \ud574\ub2f9 \uc790\ub8cc\ub97c \uc9c1\uc811 \ucc38\uace0\ud558\uc2dc\uae30 \ubc14\ub78d\ub2c8\ub2e4.",
+  s4_items: [
+    {title:"KDIGO 2024 CKD \uc784\uc0c1\uc9c4\ub8cc\uc9c0\uce68", body:"Kidney Disease: Improving Global Outcomes(KDIGO) 2024 \uc9c0\uce68\uc740 CKD \ud3c9\uac00 \ubc0f \uad00\ub9ac\uc758 \uc120\ub450\uc801\uc778 \uad6d\uc81c \ucc38\uace0 \uc790\ub8cc\ub85c, \uc774 \ub3c4\uad6c\uac00 \uae30\ubc18\ud558\ub294 CKD \ubd84\ub958 \ubc0f \uc704\ud5d8\ub3c4 \ud3c9\uac00\uc5d0 \uc0ac\uc6a9\ub418\ub294 GFR \ubc0f \ub2e8\ubc31\ub2c8\ub7c9 \ubc94\uc8fc\ub97c \uc815\uc758\ud569\ub2c8\ub2e4.", url:"https://kdigo.org/guidelines/ckd-evaluation-and-management/"},
+    {title:"\uc544\uc2dc\uc544 CKD \uad00\ub9ac \uac00\uc774\ub4dc\ub77c\uc778 \ud504\ub808\uc784\uc6cc\ud06c", body:"\uc544\uc2dc\uc544\ud0dc\ud3c9\uc591 \uc9c0\uc5ed \uc2e0\uc7a5\ub0b4\uacfc\uc804\ubb38\uc758\ub4e4\ub85c \uad6c\uc131\ub41c \ub2e4\uad6d\uc801 \ud328\ub110\uc774 \uac1c\ubc1c\ud55c \uc774 \ud504\ub808\uc784\uc6cc\ud06c\ub294 \uad6d\uc81c CKD \uc9c0\uce68\uc744 \uc9c0\uc5ed\uc758 \uc5ed\ud559, \uc758\ub8cc \uc790\uc6d0, \uc758\ub8b0 \uc5ed\ub7c9\uc5d0 \ub9de\uac8c \uc870\uc815\ud558\uc5ec \ub9ce\uc740 \uc544\uc2dc\uc544 \uc758\ub8cc \ud658\uacbd\uc5d0\uc11c \uad6d\uc81c \uc9c0\uce68\uc758 \ud65c\uc6a9\ub3c4\ub97c \uc81c\ud55c\ud558\ub294 \uaca9\ucc28\ub97c \ub2e4\ub8f9\ub2c8\ub2e4.", url:"https://www.kireports.org/article/S2468-0249(23)01632-7/fulltext"},
+    {title:"Kidney Health Australia \u2014 1\ucc28 \uc9c4\ub8cc CKD \uad00\ub9ac \ud578\ub4dc\ubd81", body:"\ud638\uc8fc\uc655\ub9bd\uc77c\ubc18\uc758\ud559\ud68c \ubc0f \ud638\uc8fc\u00b7\ub274\uc9c8\ub79c\ub4dc \uc2e0\uc7a5\ub0b4\uacfc \ub2e8\uccb4\uc758 \uc2b9\uc778\uc744 \ubc1b\uc740 \uc774 \ud578\ub4dc\ubd81\uc740 \ud638\uc8fc 1\ucc28 \uc9c4\ub8cc \ud658\uacbd\uc5d0\uc11c CKD \ud658\uc790\ub97c \ubc1c\uacac, \uad00\ub9ac, \uc758\ub8b0\ud558\ub294 \ub370 \uc2e4\uc6a9\uc801\uc774\uace0 GP \uc911\uc2ec\uc801\uc778 \uc9c0\uce68\uc744 \uc81c\uacf5\ud569\ub2c8\ub2e4.", url:"https://kidney.org.au/health-professionals/ckd-management-handbook/"}
+  ],
+  symptom_checker_title: "\uc774 \ud658\uc790\uc5d0\uac8c \ub2e4\uc74c \uc704\ud5d8 \uc694\uc778\uc774\ub098 \uc99d\uc0c1\uc774 \uc788\uc2b5\ub2c8\uae4c?",
+  symptom_checker_intro: "\ud574\ub2f9\ud558\ub294 \ud56d\ubaa9\uc744 \ubaa8\ub450 \uc120\ud0dd\ud558\uc2ed\uc2dc\uc624. CKD \uc704\ud5d8\uc740 \uc99d\uc0c1\ubcf4\ub2e4\ub294 \uae30\uc800\uc9c8\ud658\uc5d0 \uc758\ud574 \uc8fc\ub85c \uacb0\uc815\ub429\ub2c8\ub2e4 \u2014 \uc774\ub294 \uac04\ub2e8\ud55c \uc548\ub0b4\uc774\uba70 \uc810\uc218\ud654\ub41c \ud3c9\uac00\uac00 \uc544\ub2d9\ub2c8\ub2e4.",
+  symptom_prompt_positive: "\uc774 \uc704\ud5d8 \ud504\ub85c\ud544\uc740 \uc99d\uc0c1\uc774 \uc5c6\ub354\ub77c\ub3c4 CKD \uc120\ubcc4\uac80\uc0ac\ub97c \ubc1b\uc544\uc57c \ud558\ub294 \ud658\uc790\uc640 \uc77c\uce58\ud569\ub2c8\ub2e4. \uc9c0\uae08 eGFR\uacfc uACR \uac80\uc0ac\ub97c \uace0\ub824\ud558\uc2ed\uc2dc\uc624.",
+  symptom_prompt_negative: "\uc8fc\uc694 \uc704\ud5d8 \uc694\uc778\uc774 \uc120\ud0dd\ub418\uc9c0 \uc54a\uc558\uc2b5\ub2c8\ub2e4. \ub2e4\ub978 \uc774\uc720\ub85c \uc784\uc0c1\uc801 \uc758\uc2ec\uc774 \ub0a8\uc544 \uc788\ub2e4\uba74 \uc5ec\uc804\ud788 \uc120\ubcc4\uac80\uc0ac\ub97c \uc9c4\ud589\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+  calc_title: "CKD \uc704\ud5d8\ub3c4 \uadf8\ub9ac\ub4dc \uacc4\uc0b0\uae30",
+  calc_subtitle: "KDIGO GFR(G1\u2013G5) \ubc0f \ub2e8\ubc31\ub2c8\ub7c9(A1\u2013A3) \ubc94\uc8fc \uae30\ubc18",
+  age_label: "\ub098\uc774 (\uc138)",
+  sex_label: "\uc131\ubcc4",
+  male: "\ub0a8\uc131",
+  female: "\uc5ec\uc131",
+  creatinine_label: "\ud600\uccad \ud06c\ub808\uc544\ud2f0\ub2cc (mg/dL)",
+  egfr_label: "\uacc4\uc0b0\ub41c eGFR",
+  uacr_label: "\uc694 ACR (mg/g)",
+  uacr_hint: "\uc694 \uc2a4\ud2f1 \uacb0\uacfc\ub9cc \uc788\ub294 \uacbd\uc6b0, \uc74c\uc131 \ub610\ub294 \ubbf8\ub7c9 \uacb0\uacfc\uac00 \uc911\ub4f1\ub3c4 \uc99d\uac00\ub41c \ub2e8\ubc31\ub2c8\ub7c9(A2)\uc744 \uc2e0\ub8b0\ub3c4 \uc788\uac8c \ubc30\uc81c\ud558\uc9c0 \ubabb\ud55c\ub2e4\ub294 \uc810\uc744 \uc720\uc758\ud558\uc2ed\uc2dc\uc624 \u2014 uACR\uc774 \ub354 \ubbfc\uac10\ud55c \uac80\uc0ac\uc785\ub2c8\ub2e4.",
+  result_title: "\uacb0\uacfc \ubc0f \uad8c\uc7a5 \uc870\uce58",
+  awaiting: "\uacc4\uc0b0\ud558\ub824\uba74 \ubaa8\ub4e0 \ud658\uc790 \uac12\uc744 \uc785\ub825\ud558\uc2ed\uc2dc\uc624.",
+  egfr_result_lbl: "eGFR \ubc94\uc8fc",
+  uacr_result_lbl: "\ub2e8\ubc31\ub2c8\ub7c9 \ubc94\uc8fc",
+  cat_low: "\ub0ae\uc740 \uc704\ud5d8\ub3c4",
+  cat_moderate: "\uc911\ub4f1\ub3c4 \uc99d\uac00\ub41c \uc704\ud5d8\ub3c4",
+  cat_high: "\ub192\uc740 \uc704\ud5d8\ub3c4",
+  cat_veryhigh: "\ub9e4\uc6b0 \ub192\uc740 \uc704\ud5d8\ub3c4",
+  action_low: "GFR/\ub2e8\ubc31\ub2c8\ub7c9 \uadf8\ub9ac\ub4dc\uc5d0\uc11c \ub0ae\uc740 \uc704\ud5d8\ub3c4\uc785\ub2c8\ub2e4. \uc774\uac83\uc774 \ud655\uc778\ub41c \uc720\uc77c\ud55c \uc2e0\uc7a5 \uac74\uac15 \uc9c0\ud45c\uc774\uace0 \ub2e4\ub978 \uc2e0\uc7a5 \uc190\uc0c1 \uc99d\uac70\uac00 \uc5c6\ub2e4\uba74 CKD \uc9c4\ub2e8 \uae30\uc900\uc744 \ucda9\uc871\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \uc77c\uc0c1\uc801\uc778 \uc704\ud5d8 \uc694\uc778 \uad00\ub9ac\ub97c \uacc4\uc18d\ud558\uc2ed\uc2dc\uc624.",
+  action_moderate: "\uc911\ub4f1\ub3c4 \uc99d\uac00\ub41c \uc704\ud5d8\ub3c4\uc785\ub2c8\ub2e4. 1\ucc28 \uc9c4\ub8cc\uc5d0\uc11c \uad00\ub9ac\ud558\uc2ed\uc2dc\uc624: \uae30\uc800 \uc704\ud5d8 \uc694\uc778(\ud608\uc555, \ud611\ub2f9 \uc870\uc808)\uc744 \ub2e4\ub8e8\uace0 \ub9e4\ub144 \uc7ac\uac80\uc0ac\ub97c \uc2dc\ud589\ud558\uc2ed\uc2dc\uc624.",
+  action_high: "\ub192\uc740 \uc704\ud5d8\ub3c4\uc785\ub2c8\ub2e4. \ub354 \uba74\ubc00\ud55c \ubaa8\ub2c8\ud130\ub9c1\uacfc \ud568\uaed8 1\ucc28 \uc9c4\ub8cc \uad00\ub9ac\ub97c \uacc4\uc18d\ud558\uace0, \uc9c4\ud589 \uc591\uc0c1, \uc6d0\uc778, \ub3d9\ubc18\uc9c8\ud658\uc744 \uace0\ub824\ud558\uc5ec \uc2e0\uc7a5\ub0b4\uacfc \uc758\ub8b0\ub97c \uac80\ud1a0\ud558\uc2ed\uc2dc\uc624.",
+  action_veryhigh: "\ub9e4\uc6b0 \ub192\uc740 \uc704\ud5d8\ub3c4\uc785\ub2c8\ub2e4. KDIGO\uc758 \uc704\ud5d8 \uae30\ubc18 \uc758\ub8cc \uc9c0\uce68\uc5d0 \ub530\ub77c \ucd94\uac00 \ud3c9\uac00\ub97c \uc704\ud574 \uc2e0\uc7a5\ub0b4\uacfc\uc5d0 \uc758\ub8b0\ud558\uc2ed\uc2dc\uc624.",
+  threshold_note: "\uc704\ud5d8\ub3c4 \ubc94\uc8fc(\ub0ae\uc74c/\uc911\ub4f1\ub3c4 \uc99d\uac00/\ub192\uc74c/\ub9e4\uc6b0 \ub192\uc74c)\ub294 \ubc1c\ud45c\ub41c KDIGO GFR \u00d7 \ub2e8\ubc31\ub2c8\ub7c9 \ubd84\ub958\ub97c \ub530\ub985\ub2c8\ub2e4. \uc774 \ub3c4\uad6c\ub294 \ub3c5\uc790\uc801\uc778 \uadf8\ub9ac\ub4dc \ub514\uc790\uc778\uc744 \uc0ac\uc6a9\ud558\uba70 KDIGO\uc758 \uc800\uc791\uad8c \ubcf4\ud638 \uc790\ub8cc\ub97c \uc7ac\ud604\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. eGFR \uacc4\uc0b0\uc740 2021 CKD-EPI \ud06c\ub808\uc544\ud2f0\ub2cc \uacf5\uc2dd\uc744 \uc0ac\uc6a9\ud558\uba70 \uc784\uc2e0, \uadfc\uc721\ub7c9 \uadf9\ub2e8\uce58, \uae09\uc131\uc2e0\uc190\uc0c1, 18\uc138 \ubbf8\ub9cc \ud658\uc790\uc5d0\uac8c\ub294 \uac80\uc99d\ub418\uc9c0 \uc54a\uc558\uc2b5\ub2c8\ub2e4. \uc774 \ub3c4\uad6c\ub294 \uc784\uc0c1\uc801 \ud310\ub2e8\uc744 \ubcf4\uc870\ud558\uba70 \ub300\uccb4\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+  footer_disclaimer: "\uba74\ucc45 \uc870\ud56d: \ubcf8 \ub3c4\uad6c\ub294 Boehringer Ingelheim \uc758\ud559\ubd80(Medical Affairs)\uac00 \uac1c\ubc1c\ud558\uc600\uc2b5\ub2c8\ub2e4. \uc774 \uc120\ubcc4 \uadf8\ub9ac\ub4dc\ub294 \uad6d\uc81c\uc801\uc73c\ub85c \uc778\uc815\ub41c \uac80\uc99d\ub41c \ub2e8\uacc4 \ubd84\ub958 \uccb4\uacc4\uc778 KDIGO CKD \ubd84\ub958\ub97c \uae30\ubc18\uc73c\ub85c \ud558\uba70, \uad50\uc721 \ucf58\ud150\uce20\ub294 \uc2e0\ub8b0\ub3c4 \ub192\uc740 \uacf5\uac1c \uc790\ub8cc \ubc0f \uc9c0\uc5ed \uc9c0\uce68 \uc790\ub8cc\ub97c \ucc38\uace0\ud558\uc600\uc2b5\ub2c8\ub2e4. \uacf5\uac1c\uc801\uc73c\ub85c \uc774\uc6a9 \uac00\ub2a5\ud55c \uc9c0\uce68 \ubc0f \ubd84\ub958 \uccb4\uacc4\ub97c \ucc38\uace0\ud55c \uac83\uc774\uba70, \uc778\uc6a9\ub41c \uae30\uad00\uacfc\uc758 \uacf5\uc2dd\uc801\uc778 \uc81c\ud734 \uad00\uacc4\uac00 \uc544\ub2d9\ub2c8\ub2e4. \ubcf8 \ub3c4\uad6c\ub294 \uc784\uc0c1\uc801 \ud310\ub2e8\uc774\ub098 \ud604\ud589 \uc9c0\uc5ed \uc9c0\uce68\uc744 \ub300\uccb4\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ud658\uc790 \uc9c4\ub8cc\uc5d0 \uc0ac\uc6a9\ud558\uae30 \uc804\uc5d0 \ubaa8\ub4e0 \uc785\ub825\uac12\uacfc \uacb0\uacfc\ub97c \ud655\uc778\ud558\uc2ed\uc2dc\uc624."
+},
+th: {
+  app_title: "เครื่องมือรู้จักและคัดกรองโรคไตเรื้อรัง (CKD)",
+  app_subtitle: "สำหรับแพทย์เวชปฏิบัติทั่วไป · การศึกษาและสนับสนุนการตัดสินใจทางการแพทย์",
+  nav_learn: "เรียนรู้",
+  nav_symptoms: "ตรวจสอบอาการ",
+  nav_calc: "คัดกรองผู้ป่วย",
+  cta_calc: "ไปยังการตรวจสอบอาการ →",
+  cta_calc2: "ไปยังเครื่องคำนวณคัดกรอง →",
+  s1_title: "ไตวายเรื้อรัง (CKD) คืออะไร?",
+  s1_body: "โรคไตเรื้อรัง (CKD) หมายถึงความผิดปกติของโครงสร้างหรือการทำงานของไตที่คงอยู่อย่างน้อยสามเดือน และส่งผลกระทบต่อสุขภาพ การวินิจฉัยและจัดระยะใช้ค่าวัดอิสระสองค่า ได้แก่ อัตราการกรองของไต (GFR) ซึ่งสะท้อนความสามารถในการกรองเลือดของไต และภาวะโปรตีนรั่วในปัสสาวะ (albuminuria) ซึ่งสะท้อนความเสียหายของหน่วยกรองของไต โรคไตเรื้อรังจัดประเภทโดยใช้ทั้งสองค่าร่วมกัน — หมวด GFR ตั้งแต่ G1 ถึง G5 และหมวดอัลบูมินในปัสสาวะตั้งแต่ A1 ถึง A3 — เนื่องจากแต่ละค่าให้ข้อมูลความเสี่ยงที่แตกต่างกัน ผู้ป่วยอาจมี GFR ลดลงแต่มีอัลบูมินในปัสสาวะปกติ หรือมีอัลบูมินในปัสสาวะสูงแต่ GFR ยังคงปกติ ทั้งสองรูปแบบเพิ่มความเสี่ยงต่อภาวะไตวายและโรคหัวใจและหลอดเลือด ผ่านกลไกที่แตกต่างกัน",
+  s2_title: "เหตุใด CKD จึงมีความสำคัญในภูมิภาคเอเชียแปซิฟิก",
+  s2_body: "โรคไตเรื้อรังส่งผลกระทบต่อผู้ใหญ่จำนวนมากและเพิ่มขึ้นอย่างต่อเนื่องทั่วเอเชีย โดยมีปัจจัยขับเคลื่อนเดียวกับที่กำลังเปลี่ยนแปลงภาระโรคทั่วทั้งภูมิภาค ได้แก่ อัตราโรคเบาหวาน ความดันโลหิตสูง โรคอ้วน และโรคหัวใจและหลอดเลือดที่เพิ่มขึ้น ร่วมกับประชากรสูงอายุที่เพิ่มขึ้น การวิเคราะห์ระดับภูมิภาคประมาณการว่าภาระของโรคไตเรื้อรังในเอเชียมีจำนวนหลายร้อยล้านคน โดยมีความแตกต่างอย่างมากระหว่างประเทศ และภาระสูงสุดกระจุกตัวอยู่ในประเทศที่มีประชากรมากที่สุด เนื่องจาก CKD ระยะแรกมักไม่มีอาการ ภาระส่วนใหญ่นี้จึงไม่ถูกตรวจพบจนกว่าจะถึงระยะหลัง ซึ่งทางเลือกในการรักษาจะแคบลงและความเสี่ยงต่อภาวะไตวายและภาวะแทรกซ้อนทางหัวใจและหลอดเลือดเพิ่มขึ้นอย่างรวดเร็ว ทรัพยากรด้านโรคไตยังกระจายอย่างไม่เท่าเทียมกันทั่วภูมิภาค ทำให้การตรวจพบตั้งแต่เนิ่นๆ และการจัดระดับความเสี่ยงในเวชปฏิบัติทั่วไป — แทนที่จะส่งต่อล่าช้า — มีความสำคัญอย่างยิ่งต่อผลลัพธ์การรักษา",
+  s3_title: "วิธีสังเกตอาการ CKD",
+  s3_intro: "CKD มักถูกเรียกว่าเป็นโรคเงียบ: ผู้ป่วยส่วนใหญ่ไม่มีอาการในระยะแรก และเมื่ออาการปรากฏขึ้น การทำงานของไตอาจสูญเสียไปอย่างมากแล้ว การสังเกตกลุ่มผู้ป่วยที่มีความเสี่ยง — แทนที่จะรอให้มีอาการ — เป็นวิธีที่น่าเชื่อถือที่สุดในการตรวจพบตั้งแต่เนิ่นๆ",
+  s3_symptoms_title: "อาการ (มักปรากฏเฉพาะในระยะหลัง)",
+  s3_symptoms: ["อ่อนเพลียหรือพลังงานต่ำ","บวมที่ข้อเท้า ขา หรือรอบดวงตา","ปัสสาวะเป็นฟอง","การเปลี่ยนแปลงของการปัสสาวะ — บ่อยขึ้น โดยเฉพาะตอนกลางคืน","เบื่ออาหาร คลื่นไส้ หรือรับรสโลหะ","อาการคันเรื้อรัง","สมาธิลดลง"],
+  s3_risk_title: "กลุ่มเสี่ยง",
+  s3_risk: ["เบาหวาน (ชนิดที่ 1 หรือชนิดที่ 2)","ความดันโลหิตสูง","โรคหัวใจและหลอดเลือด","อายุมากกว่า 60 ปี","โรคอ้วน","ประวัติครอบครัวเป็นโรคไต","เคยมีภาวะไตวายเฉียบพลัน","การใช้ยาที่เป็นพิษต่อไตในระยะยาว (เช่น การใช้ NSAID เป็นประจำ)"],
+  s3_missed_title: "เหตุใดจึงมักถูกมองข้าม",
+  s3_missed_body: "เนื่องจาก CKD ไม่แสดงอาการตลอดช่วงระยะแรกส่วนใหญ่ จึงเป็นเรื่องง่ายที่จะมองข้ามในผู้ป่วยที่รู้สึกสบายดี การเปลี่ยนมุมมองที่มีประโยชน์ที่สุดสำหรับเวชปฏิบัติทั่วไปคือ: ผู้ป่วยที่มีเบาหวาน ความดันโลหิตสูง โรคหัวใจและหลอดเลือด หรือปัจจัยเสี่ยงอื่นๆ ข้างต้น ควรได้รับการตรวจเชิงรุก — ไม่ใช่เฉพาะผู้ที่รายงานอาการเท่านั้น เมื่ออาการปรากฏขึ้น CKD มักดำเนินไปถึงระยะหลังแล้ว",
+  screening_title: "การคัดกรอง CKD",
+  screening_intro: "การคัดกรอง CKD อาศัยการตรวจสองอย่างร่วมกัน: อัตราการกรองของไตโดยประมาณ (eGFR) และอัตราส่วนอัลบูมินต่อครีเอตินินในปัสสาวะ (uACR) ค่าใดค่าหนึ่งเพียงอย่างเดียวไม่สามารถให้ภาพรวมที่สมบูรณ์ได้ — แนวทาง KDIGO ระบุอย่างชัดเจนว่าควรใช้ทั้งสองค่าร่วมกันในการตรวจผู้ที่มีความเสี่ยงและผู้ที่เป็น CKD",
+  screening_egfr_title: "eGFR — มักมีอยู่แล้ว",
+  screening_egfr_body: "eGFR ไม่ได้วัดโดยตรง แต่คำนวณจากค่าครีเอตินินในเลือดโดยใช้สมการที่ผ่านการตรวจสอบความถูกต้อง ซึ่งคำนึงถึงอายุและเพศด้วย มาตรฐานที่แนะนำในปัจจุบันคือสมการ CKD-EPI creatinine ปี 2021 ซึ่งเป็นสูตรที่ไม่รวมเชื้อชาติและได้รับการรับรองจาก KDIGO, National Kidney Foundation และ American Society of Nephrology เนื่องจากครีเอตินินเป็นส่วนหนึ่งของการตรวจเลือดตามปกติที่สั่งด้วยเหตุผลอื่นๆ มากมาย eGFR จึงมักมีอยู่แล้วในเวชระเบียน หรือสามารถคำนวณได้โดยตรงจากผลครีเอตินินโดยใช้เครื่องคำนวณด้านล่าง",
+  screening_uacr_title: "uACR — การตรวจที่มักถูกมองข้าม",
+  screening_uacr_body: "ต่างจาก eGFR, uACR ไม่ได้เกิดขึ้นโดยอัตโนมัติ — ต้องมีการสั่งตรวจอย่างจงใจ อัตราการตรวจ uACR มักต่ำกว่าอัตราการตรวจ eGFR อย่างสม่ำเสมอในกลุ่มเสี่ยง แม้ว่าจะเป็นการตรวจที่ไวกว่าในการตรวจพบความเสียหายของไตในระยะแรกในภาวะต่างๆ เช่น โรคไตจากเบาหวาน ซึ่งอัลบูมินในปัสสาวะมักปรากฏก่อนที่ GFR จะลดลง การตรวจปัสสาวะด้วยแถบทดสอบสามารถใช้เป็นทางเลือกที่รวดเร็วและเข้าถึงได้ง่ายกว่า แต่มีความไวต่ำกว่าและอาจพลาดการตรวจพบอัลบูมินในปัสสาวะระดับปานกลางที่ uACR ออกแบบมาเพื่อตรวจจับ",
+  s4_title: "แนวทางและแหล่งข้อมูลสำหรับแพทย์เวชปฏิบัติทั่วไป",
+  s4_intro: "เครื่องมือนี้อ้างอิงจากแหล่งข้อมูลระดับนานาชาติและระดับภูมิภาคดังต่อไปนี้ ขอแนะนำให้ทีมเวชปฏิบัติทั่วไปศึกษาเอกสารต้นฉบับโดยตรงเพื่อรายละเอียดทางคลินิกฉบับเต็ม",
+  s4_items: [
+    {title:"แนวทางปฏิบัติทางคลินิก KDIGO 2024 สำหรับ CKD", body:"แนวทาง Kidney Disease: Improving Global Outcomes (KDIGO) ปี 2024 เป็นเอกสารอ้างอิงระดับนานาชาติชั้นนำสำหรับการประเมินและจัดการ CKD โดยกำหนดหมวด GFR และอัลบูมินในปัสสาวะที่ใช้จัดประเภท CKD และประเมินความเสี่ยงซึ่งเครื่องมือนี้สร้างขึ้นบนพื้นฐานดังกล่าว", url:"https://kdigo.org/guidelines/ckd-evaluation-and-management/"},
+    {title:"กรอบแนวทางการจัดการ CKD ในเอเชีย", body:"พัฒนาโดยคณะผู้เชี่ยวชาญด้านโรคไตจากหลายประเทศในภูมิภาคเอเชียแปซิฟิก กรอบแนวทางนี้ปรับแนวทาง CKD ระดับนานาชาติให้เหมาะกับระบาดวิทยา ทรัพยากรด้านสุขภาพ และศักยภาพในการส่งต่อของภูมิภาค — เพื่อแก้ไขช่องว่างที่จำกัดการนำแนวทางระดับนานาชาติไปใช้ในหลายพื้นที่ของเอเชีย", url:"https://www.kireports.org/article/S2468-0249(23)01632-7/fulltext"},
+    {title:"Kidney Health Australia — คู่มือการจัดการ CKD ในเวชปฏิบัติทั่วไป", body:"ได้รับการรับรองจาก Royal Australian College of General Practitioners และองค์กรด้านโรคไตของออสเตรเลียและนิวซีแลนด์ คู่มือนี้ให้แนวทางเชิงปฏิบัติที่เน้นแพทย์ทั่วไปสำหรับการตรวจพบ จัดการ และส่งต่อผู้ป่วย CKD ในบริบทของออสเตรเลีย", url:"https://kidney.org.au/health-professionals/ckd-management-handbook/"}
+  ],
+  symptom_checker_title: "ผู้ป่วยรายนี้มีปัจจัยเสี่ยงหรืออาการเหล่านี้หรือไม่?",
+  symptom_checker_intro: "เลือกทุกข้อที่ตรงกับผู้ป่วย ความเสี่ยง CKD ขับเคลื่อนหลักโดยภาวะพื้นฐานมากกว่าอาการ — นี่เป็นเพียงข้อเสนอแนะเบื้องต้น ไม่ใช่การประเมินแบบให้คะแนน",
+  symptom_prompt_positive: "ลักษณะความเสี่ยงนี้สอดคล้องกับผู้ป่วยที่ควรได้รับการคัดกรอง CKD แม้ไม่มีอาการ ควรพิจารณาสั่งตรวจ eGFR และ uACR ทันที",
+  symptom_prompt_negative: "ไม่มีปัจจัยเสี่ยงสำคัญที่ถูกเลือก หากยังคงมีข้อสงสัยทางคลินิกด้วยเหตุผลอื่น ท่านยังสามารถดำเนินการคัดกรองต่อได้",
+  calc_title: "เครื่องคำนวณตารางความเสี่ยง CKD",
+  calc_subtitle: "อ้างอิงจากหมวด GFR (G1–G5) และอัลบูมินในปัสสาวะ (A1–A3) ของ KDIGO",
+  age_label: "อายุ (ปี)",
+  sex_label: "เพศ",
+  male: "ชาย",
+  female: "หญิง",
+  creatinine_label: "ครีเอตินินในเลือด (mg/dL)",
+  egfr_label: "eGFR ที่คำนวณได้",
+  uacr_label: "ACR ในปัสสาวะ (mg/g)",
+  uacr_hint: "หากมีเพียงผลตรวจแถบทดสอบปัสสาวะ โปรดทราบว่าผลลบหรือผลเล็กน้อยไม่สามารถตัดความเป็นไปได้ของอัลบูมินในปัสสาวะระดับปานกลาง (A2) ได้อย่างน่าเชื่อถือ — uACR เป็นการตรวจที่ไวกว่า",
+  result_title: "ผลลัพธ์และคำแนะนำการดำเนินการ",
+  awaiting: "กรอกค่าของผู้ป่วยทั้งหมดเพื่อคำนวณ",
+  egfr_result_lbl: "หมวด eGFR",
+  uacr_result_lbl: "หมวดอัลบูมินในปัสสาวะ",
+  cat_low: "ความเสี่ยงต่ำ",
+  cat_moderate: "ความเสี่ยงเพิ่มขึ้นปานกลาง",
+  cat_high: "ความเสี่ยงสูง",
+  cat_veryhigh: "ความเสี่ยงสูงมาก",
+  action_low: "ความเสี่ยงต่ำบนตาราง GFR/อัลบูมินในปัสสาวะ หากนี่เป็นเพียงตัวชี้วัดสุขภาพไตที่ตรวจและไม่มีหลักฐานความเสียหายของไตอื่น ผลนี้ไม่เข้าเกณฑ์การวินิจฉัย CKD ควรดำเนินการจัดการปัจจัยเสี่ยงตามปกติต่อไป",
+  action_moderate: "ความเสี่ยงเพิ่มขึ้นปานกลาง จัดการในเวชปฏิบัติทั่วไป: ควบคุมปัจจัยเสี่ยงพื้นฐาน (ความดันโลหิต การควบคุมระดับน้ำตาล) และตรวจซ้ำทุกปี",
+  action_high: "ความเสี่ยงสูง ดำเนินการจัดการในเวชปฏิบัติทั่วไปต่อไปพร้อมการติดตามที่ใกล้ชิดขึ้น พิจารณาส่งต่อแพทย์โรคไตตามแนวโน้มการดำเนินโรค สาเหตุ และโรคร่วม",
+  action_veryhigh: "ความเสี่ยงสูงมาก ส่งต่อแพทย์โรคไตเพื่อประเมินเพิ่มเติม ตามแนวทางการส่งต่อโดยพิจารณาจากความเสี่ยงของ KDIGO",
+  threshold_note: "ระดับความเสี่ยง (ต่ำ / เพิ่มขึ้นปานกลาง / สูง / สูงมาก) เป็นไปตามการจัดประเภท GFR × อัลบูมินในปัสสาวะที่เผยแพร่โดย KDIGO เครื่องมือนี้ใช้การออกแบบตารางต้นฉบับและไม่ได้ทำซ้ำรูปภาพที่มีลิขสิทธิ์ของ KDIGO การคำนวณ eGFR ใช้สมการ CKD-EPI creatinine ปี 2021 และไม่ได้รับการตรวจสอบความถูกต้องสำหรับการตั้งครรภ์ ภาวะกล้ามเนื้อผิดปกติรุนแรง ไตวายเฉียบพลัน หรือผู้ป่วยอายุต่ำกว่า 18 ปี เครื่องมือนี้เป็นเพียงตัวช่วยสนับสนุนการตัดสินใจทางคลินิก ไม่ใช่สิ่งทดแทน",
+  footer_disclaimer: "ข้อจำกัดความรับผิดชอบ: เครื่องมือนี้พัฒนาขึ้นโดยทีมฝ่ายการแพทย์ (Medical Affairs) ของ Boehringer Ingelheim ตารางคัดกรองนี้อ้างอิงจากการจัดประเภท KDIGO CKD ซึ่งเป็นระบบการจัดระยะที่ผ่านการตรวจสอบและได้รับการยอมรับในระดับนานาชาติ และเนื้อหาทางการศึกษาอ้างอิงจากแหล่งข้อมูลสาธารณะที่น่าเชื่อถือสูงและทรัพยากรแนวทางระดับภูมิภาค ทรัพยากรนี้อ้างอิงแนวทางและระบบการจัดประเภทที่เปิดเผยต่อสาธารณะ ไม่ได้เป็นความร่วมมืออย่างเป็นทางการกับหน่วยงานที่อ้างอิง เครื่องมือนี้ไม่สามารถทดแทนดุลยพินิจทางคลินิกหรือแนวทางระดับภูมิภาคฉบับปัจจุบัน โปรดตรวจสอบข้อมูลนำเข้าและผลลัพธ์ทั้งหมดก่อนนำไปใช้ในการดูแลผู้ป่วย"
+},
+vi: {
+  app_title: "Công Cụ Nhận Biết & Sàng Lọc CKD",
+  app_subtitle: "Dành cho Bác sĩ Chăm sóc Ban đầu · Giáo dục & Hỗ trợ Quyết định của Bộ phận Y khoa",
+  nav_learn: "Tìm hiểu",
+  nav_symptoms: "Kiểm Tra Triệu Chứng",
+  nav_calc: "Sàng lọc bệnh nhân",
+  cta_calc: "Tiếp tục đến Kiểm Tra Triệu Chứng →",
+  cta_calc2: "Tiếp tục đến Máy tính Sàng lọc →",
+  s1_title: "Bệnh thận mạn (CKD) là gì?",
+  s1_body: "Bệnh thận mạn (CKD) được định nghĩa là bất thường về cấu trúc hoặc chức năng thận, tồn tại ít nhất ba tháng, có ảnh hưởng đến sức khỏe. Bệnh được chẩn đoán và phân giai đoạn bằng hai chỉ số độc lập: mức lọc cầu thận (GFR), phản ánh khả năng lọc máu của thận, và albumin niệu, phản ánh tổn thương các đơn vị lọc của thận. CKD được phân loại dựa trên cả hai chỉ số này \u2014 các mức GFR từ G1 đến G5, và các mức albumin niệu từ A1 đến A3 \u2014 vì mỗi chỉ số mang thông tin nguy cơ riêng biệt. Một bệnh nhân có thể có GFR giảm nhưng albumin niệu bình thường, hoặc albumin niệu đáng kể nhưng GFR còn bảo tồn; cả hai mô hình đều mang nguy cơ suy thận và biến cố tim mạch cao hơn, thông qua các con đường khác nhau.",
+  s2_title: "Vì sao CKD quan trọng ở khu vực Châu Á - Thái Bình Dương",
+  s2_body: "CKD ảnh hưởng đến một tỷ lệ lớn và ngày càng tăng người trưởng thành trên khắp châu Á, do cùng những yếu tố đang định hình lại gánh nặng bệnh tật trong khu vực: tỷ lệ đái tháo đường, tăng huyết áp, béo phì và bệnh tim mạch gia tăng, cùng với dân số già hóa. Các phân tích khu vực ước tính gánh nặng CKD ở châu Á lên đến hàng trăm triệu người, với sự khác biệt đáng kể giữa các quốc gia và gánh nặng cao nhất tập trung ở các quốc gia đông dân nhất. Vì CKD giai đoạn sớm phần lớn không có triệu chứng, hầu hết gánh nặng này không được phát hiện cho đến giai đoạn muộn hơn, khi các lựa chọn điều trị thu hẹp lại và nguy cơ suy thận cùng biến chứng tim mạch tăng mạnh. Năng lực chuyên khoa thận cũng phân bố không đồng đều trong khu vực, khiến việc phát hiện sớm và phân tầng nguy cơ tại tuyến chăm sóc ban đầu \u2014 thay vì chuyển tuyến muộn \u2014 trở nên đặc biệt quan trọng đối với kết quả điều trị.",
+  s3_title: "Cách nhận biết CKD",
+  s3_intro: "CKD thường được gọi là bệnh thầm lặng: hầu hết bệnh nhân không có triệu chứng ở giai đoạn sớm, và khi triệu chứng xuất hiện, chức năng thận đáng kể có thể đã bị mất. Nhận biết bệnh nhân có nguy cơ \u2014 thay vì chờ đợi triệu chứng \u2014 là con đường đáng tin cậy nhất để phát hiện sớm.",
+  s3_symptoms_title: "Triệu chứng (thường chỉ ở giai đoạn muộn)",
+  s3_symptoms: ["Mệt mỏi hoặc thiếu năng lượng","Phù ở mắt cá chân, chân, hoặc quanh mắt","Nước tiểu có bọt","Thay đổi khi đi tiểu \u2014 tiểu nhiều hơn, đặc biệt vào ban đêm","Chán ăn, buồn nôn, hoặc có vị kim loại trong miệng","Ngứa dai dẳng","Khó tập trung"],
+  s3_risk_title: "Đối tượng nguy cơ",
+  s3_risk: ["Đái tháo đường (týp 1 hoặc týp 2)","Tăng huyết áp","Bệnh tim mạch","Trên 60 tuổi","Béo phì","Tiền sử gia đình mắc bệnh thận","Từng có đợt tổn thương thận cấp","Sử dụng thuốc độc thận lâu dài (ví dụ: dùng NSAID thường xuyên)"],
+  s3_missed_title: "Vì sao dễ bị bỏ sót",
+  s3_missed_body: "Vì CKD không có triệu chứng trong phần lớn giai đoạn sớm, bệnh rất dễ bị bỏ qua ở những bệnh nhân cảm thấy khỏe mạnh. Sự thay đổi hữu ích nhất đối với chăm sóc ban đầu: bất kỳ bệnh nhân nào có đái tháo đường, tăng huyết áp, bệnh tim mạch, hoặc các yếu tố nguy cơ khác nêu trên nên được xét nghiệm chủ động \u2014 không chỉ những người báo cáo triệu chứng. Khi triệu chứng xuất hiện, CKD thường đã tiến triển đến giai đoạn muộn hơn.",
+  screening_title: "Sàng lọc CKD",
+  screening_intro: "Sàng lọc CKD dựa vào hai xét nghiệm được sử dụng cùng nhau: mức lọc cầu thận ước tính (eGFR) và tỷ lệ albumin/creatinine niệu (uACR). Không xét nghiệm nào riêng lẻ cho bức tranh đầy đủ \u2014 hướng dẫn KDIGO nêu rõ rằng cả hai nên được sử dụng cùng nhau để xét nghiệm người có nguy cơ và người mắc CKD.",
+  screening_egfr_title: "eGFR \u2014 thường đã có sẵn",
+  screening_egfr_body: "eGFR không được đo trực tiếp \u2014 nó được tính toán từ creatinine huyết thanh bằng một công thức đã được xác thực, công thức này cũng tính đến tuổi và giới tính. Tiêu chuẩn hiện được khuyến nghị là công thức CKD-EPI creatinine 2021, một công thức không phân biệt chủng tộc được KDIGO, National Kidney Foundation, và American Society of Nephrology chứng thực. Vì creatinine là một phần của các xét nghiệm máu thường quy được chỉ định vì nhiều lý do khác, eGFR thường đã có sẵn trong hồ sơ bệnh án \u2014 hoặc có thể được tính trực tiếp từ kết quả creatinine bằng máy tính bên dưới.",
+  screening_uacr_title: "uACR \u2014 xét nghiệm thường bị bỏ sót",
+  screening_uacr_body: "Không giống eGFR, uACR không tự động xảy ra \u2014 nó cần được chỉ định một cách chủ động. Tỷ lệ xét nghiệm uACR luôn thấp hơn đáng kể so với tỷ lệ xét nghiệm eGFR ở nhóm nguy cơ, mặc dù đây là xét nghiệm nhạy hơn để phát hiện tổn thương thận sớm trong các bệnh như bệnh thận do đái tháo đường, nơi albumin niệu thường xuất hiện trước khi GFR suy giảm. Que thử nước tiểu có thể được sử dụng như một giải pháp thay thế nhanh hơn, dễ tiếp cận hơn, nhưng kém nhạy hơn và có thể bỏ sót phạm vi albumin niệu tăng vừa phải mà uACR được thiết kế để phát hiện.",
+  s4_title: "Hướng dẫn & Tài liệu tham khảo cho Bác sĩ Chăm sóc Ban đầu",
+  s4_intro: "Công cụ này được xây dựng dựa trên các tài liệu tham khảo quốc tế và khu vực sau đây. Các đội ngũ chăm sóc ban đầu được khuyến khích tham khảo trực tiếp các tài liệu này để biết đầy đủ chi tiết lâm sàng.",
+  s4_items: [
+    {title:"Hướng dẫn Thực hành Lâm sàng KDIGO 2024 về CKD", body:"Hướng dẫn Kidney Disease: Improving Global Outcomes (KDIGO) 2024 là tài liệu tham khảo quốc tế hàng đầu cho việc đánh giá và quản lý CKD, định nghĩa các mức GFR và albumin niệu được sử dụng để phân loại CKD và đánh giá nguy cơ mà công cụ này được xây dựng dựa trên.", url:"https://kdigo.org/guidelines/ckd-evaluation-and-management/"},
+    {title:"Khung Hướng dẫn Quản lý CKD tại Châu Á", body:"Được phát triển bởi một hội đồng đa quốc gia các bác sĩ chuyên khoa thận Châu Á - Thái Bình Dương, khung hướng dẫn này điều chỉnh các hướng dẫn CKD quốc tế theo dịch tễ học, nguồn lực y tế, và năng lực chuyển tuyến của khu vực \u2014 giải quyết những khoảng trống hạn chế việc áp dụng các hướng dẫn quốc tế tại nhiều cơ sở y tế châu Á.", url:"https://www.kireports.org/article/S2468-0249(23)01632-7/fulltext"},
+    {title:"Kidney Health Australia \u2014 Sổ tay Quản lý CKD tại Chăm sóc Ban đầu", body:"Được chứng thực bởi Trường Cao đẳng Bác sĩ Đa khoa Hoàng gia Úc và các tổ chức thận học Úc và New Zealand, sổ tay này cung cấp hướng dẫn thực tiễn, tập trung vào bác sĩ đa khoa để phát hiện, quản lý, và chuyển tuyến bệnh nhân CKD trong bối cảnh chăm sóc ban đầu tại Úc.", url:"https://kidney.org.au/health-professionals/ckd-management-handbook/"}
+  ],
+  symptom_checker_title: "Bệnh nhân này có bất kỳ yếu tố nguy cơ hoặc triệu chứng nào sau đây không?",
+  symptom_checker_intro: "Chọn tất cả các mục phù hợp. Nguy cơ CKD chủ yếu do các bệnh nền gây ra hơn là triệu chứng \u2014 đây chỉ là gợi ý nhanh, không phải đánh giá có tính điểm.",
+  symptom_prompt_positive: "Hồ sơ nguy cơ này phù hợp với một bệnh nhân nên được sàng lọc CKD, ngay cả khi không có triệu chứng. Hãy cân nhắc chỉ định eGFR và uACR ngay bây giờ.",
+  symptom_prompt_negative: "Không có yếu tố nguy cơ chính nào được chọn. Nếu vẫn còn nghi ngờ lâm sàng vì lý do khác, bạn vẫn có thể tiếp tục sàng lọc.",
+  calc_title: "Máy tính Bảng Nguy cơ CKD",
+  calc_subtitle: "Dựa trên các mức GFR (G1\u2013G5) và albumin niệu (A1\u2013A3) của KDIGO",
+  age_label: "Tuổi (năm)",
+  sex_label: "Giới tính",
+  male: "Nam",
+  female: "Nữ",
+  creatinine_label: "Creatinine huyết thanh (mg/dL)",
+  egfr_label: "eGFR đã tính",
+  uacr_label: "ACR niệu (mg/g)",
+  uacr_hint: "Nếu chỉ có kết quả que thử nước tiểu, lưu ý rằng kết quả âm tính hoặc dấu vết không loại trừ đáng tin cậy albumin niệu tăng vừa phải (A2) \u2014 uACR là xét nghiệm nhạy hơn.",
+  result_title: "Kết quả & Hành động Đề xuất",
+  awaiting: "Nhập đầy đủ các giá trị của bệnh nhân để tính toán.",
+  egfr_result_lbl: "Mức eGFR",
+  uacr_result_lbl: "Mức albumin niệu",
+  cat_low: "Nguy cơ thấp",
+  cat_moderate: "Nguy cơ tăng vừa phải",
+  cat_high: "Nguy cơ cao",
+  cat_veryhigh: "Nguy cơ rất cao",
+  action_low: "Nguy cơ thấp trên bảng GFR/albumin niệu. Nếu đây là chỉ số duy nhất về sức khỏe thận được kiểm tra và không có bằng chứng tổn thương thận khác, kết quả này không đáp ứng tiêu chí chẩn đoán CKD. Tiếp tục quản lý các yếu tố nguy cơ thường quy.",
+  action_moderate: "Nguy cơ tăng vừa phải. Quản lý tại chăm sóc ban đầu: giải quyết các yếu tố nguy cơ nền (huyết áp, kiểm soát đường huyết), và xét nghiệm lại hàng năm.",
+  action_high: "Nguy cơ cao. Tiếp tục quản lý tại chăm sóc ban đầu với theo dõi chặt chẽ hơn; cân nhắc chuyển tuyến chuyên khoa thận tùy theo diễn tiến, nguyên nhân, và bệnh đồng mắc.",
+  action_veryhigh: "Nguy cơ rất cao. Chuyển tuyến chuyên khoa thận để đánh giá thêm, phù hợp với hướng dẫn chuyển tuyến dựa trên nguy cơ của KDIGO.",
+  threshold_note: "Các mức nguy cơ (Thấp / Tăng vừa phải / Cao / Rất cao) tuân theo phân loại GFR \u00d7 albumin niệu đã công bố của KDIGO. Công cụ này sử dụng thiết kế bảng gốc và không sao chép hình ảnh có bản quyền của KDIGO. Tính toán eGFR sử dụng công thức CKD-EPI creatinine 2021 và chưa được xác thực cho thai kỳ, khối lượng cơ cực đoan, tổn thương thận cấp, hoặc bệnh nhân dưới 18 tuổi. Công cụ này hỗ trợ, chứ không thay thế, đánh giá lâm sàng.",
+  footer_disclaimer: "Miễn trừ trách nhiệm: Công cụ này được phát triển bởi đội ngũ Y khoa (Medical Affairs) của Boehringer Ingelheim. Bảng sàng lọc này dựa trên phân loại CKD của KDIGO, một hệ thống phân giai đoạn đã được xác thực và công nhận quốc tế, và nội dung giáo dục dựa trên các tài liệu tham khảo công khai có uy tín cao cùng các tài liệu hướng dẫn khu vực. Tài liệu này tham khảo các hướng dẫn và hệ thống phân loại công khai; đây không phải là quan hệ đối tác chính thức với các tổ chức được trích dẫn. Công cụ này không thay thế cho đánh giá lâm sàng hoặc các hướng dẫn khu vực hiện hành. Vui lòng xác minh tất cả dữ liệu đầu vào và kết quả trước khi sử dụng trong chăm sóc bệnh nhân."
+},
+zh: {
+  app_title: "CKD 识别与筛查工具",
+  app_subtitle: "面向基层医疗医生 · 医学事务教育与决策支持",
+  nav_learn: "了解",
+  nav_symptoms: "症状核查",
+  nav_calc: "为患者筛查",
+  cta_calc: "前往症状核查 →",
+  cta_calc2: "前往筛查计算器 →",
+  s1_title: "什么是慢性肾脏病（CKD）？",
+  s1_body: "慢性肾脏病（CKD）是指肾脏结构或功能异常，持续至少三个月，并对健康产生影响。诊断和分期使用两项独立指标：肾小球滤过率（GFR），反映肾脏过滤血液的能力；以及蛋白尿（albuminuria），反映肾脏滤过单位的损伤程度。CKD 的分类同时采用这两项指标——GFR 分级从 G1 到 G5，蛋白尿分级从 A1 到 A3——因为每项指标都提供了另一项无法体现的风险信息。患者可能 GFR 降低但蛋白尿正常，也可能蛋白尿显著升高但 GFR 保留；这两种模式都会通过不同途径增加肾衰竭和心血管事件的风险。",
+  s2_title: "为何 CKD 在亚太地区至关重要",
+  s2_body: "CKD 影响着亚洲越来越多的成年人，其驱动因素与正在重塑本地区疾病负担的因素相同：糖尿病、高血压、肥胖和心血管疾病发病率上升，加上人口老龄化。区域分析估计，亚洲 CKD 的负担达数亿人，各国之间差异显著，人口最多的国家负担最重。由于 CKD 早期基本无症状，这一负担大多直到晚期才被发现，此时治疗选择变窄，肾衰竭和心血管并发症风险急剧上升。该地区的肾脏专科资源分布也不均衡，这使得在基层医疗中及早发现和风险分层——而非延迟转诊——对治疗结果尤为重要。",
+  s3_title: "如何识别 CKD",
+  s3_intro: "CKD 常被称为“沉默的疾病”：大多数患者在早期没有症状，而当症状出现时，肾功能可能已经大量丧失。识别高危患者——而非等待症状出现——是实现早期发现最可靠的方法。",
+  s3_symptoms_title: "症状（通常仅见于较晚期）",
+  s3_symptoms: ["乏力或精力不足","脚踝、腿部或眼周水肿","泡沫尿","排尿变化——次数增多，尤其是夜间","食欲不振、恶心或口中有金属味","持续性瘙痒","注意力难以集中"],
+  s3_risk_title: "高危人群",
+  s3_risk: ["糖尿病（1型或2型）","高血压","心血管疾病","年龄超过60岁","肥胖","肾脏病家族史","既往急性肾损伤病史","长期使用肾毒性药物（例如经常使用NSAID）"],
+  s3_missed_title: "为何容易被漏诊",
+  s3_missed_body: "由于CKD在大部分早期阶段无症状，在自我感觉良好的患者中很容易被忽视。对基层医疗而言，最有用的思路转变是：任何患有糖尿病、高血压、心血管疾病或上述其他危险因素的患者都应主动接受检测——而不仅仅是报告症状的患者。当症状出现时，CKD往往已经进展到较晚期阶段。",
+  screening_title: "CKD 筛查",
+  screening_intro: "CKD 筛查依赖于两项联合使用的检测：估算肾小球滤过率（eGFR）和尿白蛋白/肌酐比值（uACR）。单独使用任何一项都无法提供完整的信息——KDIGO 明确建议应将两者联合用于检测高危人群和CKD患者。",
+  screening_egfr_title: "eGFR——通常已经可获得",
+  screening_egfr_body: "eGFR 并非直接测量得出，而是通过一个经过验证的公式，根据血清肌酐计算得出，该公式还纳入了年龄和性别因素。目前推荐的标准是2021年CKD-EPI肌酐公式，这是一个不含种族因素的公式，得到KDIGO、美国国家肾脏基金会（National Kidney Foundation）及美国肾脏病学会（American Society of Nephrology）的认可。由于肌酐是因各种其他原因常规抽血检测的一部分，eGFR 往往已经记录在病历中——也可以通过下方的计算器直接根据肌酐结果计算得出。",
+  screening_uacr_title: "uACR——容易被遗漏的检测",
+  screening_uacr_body: "与eGFR不同，uACR 不会自动进行——需要主动开具医嘱。在高危人群中，uACR 的检测率持续明显落后于 eGFR 的检测率，尽管在糖尿病肾病等疾病中，蛋白尿往往在GFR下降之前出现，uACR是检测早期肾损伤更为敏感的指标。尿液试纸可作为更快速、更易获取的替代方法，但敏感性较低，可能漏检uACR旨在捕捉的中度升高蛋白尿范围。",
+  s4_title: "面向基层医疗医生的指南与资源",
+  s4_intro: "本工具参考了以下国际及区域资源。建议基层医疗团队直接查阅这些资源以获取完整的临床细节。",
+  s4_items: [
+    {title:"KDIGO 2024 CKD 临床实践指南", body:"Kidney Disease: Improving Global Outcomes（KDIGO）2024指南是CKD评估与管理领域领先的国际参考文献，定义了本工具所依据的用于CKD分类及风险评估的GFR和蛋白尿分级。", url:"https://kdigo.org/guidelines/ckd-evaluation-and-management/"},
+    {title:"亚洲CKD管理指南框架", body:"由亚太地区多国肾脏科专家组成的小组制定，该框架根据本地区的流行病学特征、医疗资源及转诊能力，对国际CKD指南进行了调整——解决了限制国际指南在许多亚洲医疗环境中应用的差距。", url:"https://www.kireports.org/article/S2468-0249(23)01632-7/fulltext"},
+    {title:"Kidney Health Australia——基层医疗CKD管理手册", body:"该手册获得澳大利亚皇家全科医生学院及澳新肾脏病学机构的认可，为在澳大利亚基层医疗环境中发现、管理及转诊CKD患者提供了以全科医生为核心的实用指导。", url:"https://kidney.org.au/health-professionals/ckd-management-handbook/"}
+  ],
+  symptom_checker_title: "该患者是否有以下任何危险因素或症状？",
+  symptom_checker_intro: "请选择所有符合的项目。CKD风险主要由基础疾病驱动，而非症状——这只是一个快速提示，并非评分评估。",
+  symptom_prompt_positive: "该风险特征符合应接受CKD筛查的患者情况，即使没有症状。请考虑现在就安排eGFR和uACR检测。",
+  symptom_prompt_negative: "未选择主要危险因素。如果因其他原因仍存在临床怀疑，您仍可继续进行筛查。",
+  calc_title: "CKD 风险分级表计算器",
+  calc_subtitle: "基于KDIGO的GFR（G1–G5）及蛋白尿（A1–A3）分级",
+  age_label: "年龄（岁）",
+  sex_label: "性别",
+  male: "男性",
+  female: "女性",
+  creatinine_label: "血清肌酐（mg/dL）",
+  egfr_label: "计算所得eGFR",
+  uacr_label: "尿ACR（mg/g）",
+  uacr_hint: "如仅有尿液试纸结果，请注意阴性或微量结果并不能可靠地排除中度升高的蛋白尿（A2）——uACR是更为敏感的检测。",
+  result_title: "结果与建议措施",
+  awaiting: "请输入所有患者数值以进行计算。",
+  egfr_result_lbl: "eGFR 分级",
+  uacr_result_lbl: "蛋白尿分级",
+  cat_low: "低风险",
+  cat_moderate: "中度升高风险",
+  cat_high: "高风险",
+  cat_veryhigh: "极高风险",
+  action_low: "GFR/蛋白尿分级表上为低风险。若这是唯一检测的肾脏健康指标，且无其他肾损伤证据，此结果不符合CKD诊断标准。请继续常规的危险因素管理。",
+  action_moderate: "中度升高风险。在基层医疗中进行管理：控制基础危险因素（血压、血糖控制），并每年复查一次。",
+  action_high: "高风险。继续在基层医疗中管理并加强监测；根据病情进展、病因及合并症情况，考虑转诊至肾脏科。",
+  action_veryhigh: "极高风险。根据KDIGO基于风险的转诊指导原则，转诊至肾脏科进行进一步评估。",
+  threshold_note: "风险分级（低/中度升高/高/极高）遵循KDIGO已发布的GFR × 蛋白尿分类体系。本工具采用原创的表格设计，并未复制KDIGO受版权保护的图表。eGFR计算采用2021年CKD-EPI肌酐公式，尚未在妊娠、极端肌肉量、急性肾损伤或18岁以下患者中得到验证。本工具用于辅助而非替代临床判断。",
+  footer_disclaimer: "免责声明：本工具由勃林格殷格翰（Boehringer Ingelheim）医学事务团队开发。该筛查分级表基于KDIGO CKD分类——一项经过验证、获国际认可的分期系统，教育内容则参考了高度权威的公开资料及区域指南资源。本资源参考了公开发表的指南及分类体系，并非与所引用机构存在正式合作关系。本工具不能替代临床判断或当前地区指南。在用于患者诊疗前，请核实所有输入数据及结果。"
+},
+ms: {
+  app_title: "Alat Pengecaman & Saringan CKD",
+  app_subtitle: "Untuk Pengamal Perubatan Primer · Pendidikan & Sokongan Keputusan Hal Ehwal Perubatan",
+  nav_learn: "Belajar",
+  nav_symptoms: "Semakan Gejala",
+  nav_calc: "Saring Pesakit Saya",
+  cta_calc: "Teruskan ke Semakan Gejala →",
+  cta_calc2: "Teruskan ke Kalkulator Saringan →",
+  s1_title: "Apakah Penyakit Buah Pinggang Kronik (CKD)?",
+  s1_body: "Penyakit buah pinggang kronik (CKD) ditakrifkan sebagai keabnormalan struktur atau fungsi buah pinggang, hadir selama sekurang-kurangnya tiga bulan, dengan implikasi kepada kesihatan. Ia didiagnosis dan dikelaskan menggunakan dua ukuran bebas: kadar penapisan glomerular (GFR), yang mencerminkan sebaik mana buah pinggang menapis darah, dan albuminuria, yang mencerminkan kerosakan pada unit penapisan buah pinggang. CKD dikelaskan menggunakan kedua-duanya bersama \u2014 kategori GFR G1 hingga G5, dan kategori albuminuria A1 hingga A3 \u2014 kerana setiap satu membawa maklumat risiko yang berbeza. Seorang pesakit boleh mempunyai GFR yang berkurangan dengan albuminuria normal, atau albuminuria yang ketara dengan GFR yang terpelihara; kedua-dua corak ini membawa risiko kegagalan buah pinggang dan kejadian kardiovaskular yang tinggi, melalui laluan yang berbeza.",
+  s2_title: "Mengapa CKD Kritikal di Asia-Pasifik",
+  s2_body: "CKD menjejaskan bahagian besar dan semakin meningkat orang dewasa di seluruh Asia, didorong oleh faktor yang sama yang membentuk semula beban penyakit di seluruh rantau: peningkatan kadar diabetes, hipertensi, obesiti, dan penyakit kardiovaskular, digabungkan dengan populasi yang semakin tua. Analisis serantau menganggarkan beban CKD di Asia mencecah beratus-ratus juta orang, dengan variasi yang ketara antara negara dan beban tertinggi tertumpu di negara berpenduduk paling ramai. Kerana CKD peringkat awal sebahagian besarnya senyap, kebanyakan beban ini tidak dikesan sehingga peringkat lebih lanjut, apabila pilihan rawatan mengecil dan risiko kegagalan buah pinggang serta komplikasi kardiovaskular meningkat dengan mendadak. Kapasiti nefrologi juga tidak diagihkan secara sekata di seluruh rantau, menjadikan pengesanan awal dan pengstrataan risiko dalam penjagaan primer \u2014 berbanding rujukan lewat \u2014 amat penting untuk hasil rawatan.",
+  s3_title: "Cara Mengenal Pasti CKD",
+  s3_intro: "CKD sering digelar penyakit senyap: kebanyakan pesakit tiada gejala pada peringkat awal, dan apabila gejala muncul, fungsi buah pinggang yang ketara mungkin telah hilang. Mengenal pasti pesakit berisiko \u2014 berbanding menunggu gejala \u2014 adalah laluan paling boleh dipercayai untuk pengesanan awal.",
+  s3_symptoms_title: "Gejala (biasanya hanya pada peringkat lanjut)",
+  s3_symptoms: ["Keletihan atau tenaga rendah","Bengkak di buku lali, kaki, atau sekitar mata","Air kencing berbuih","Perubahan dalam kencing \u2014 lebih kerap, terutamanya waktu malam","Selera makan kurang, loya, atau rasa logam","Gatal yang berterusan","Kesukaran untuk fokus"],
+  s3_risk_title: "Siapa yang berisiko",
+  s3_risk: ["Diabetes (jenis 1 atau jenis 2)","Hipertensi","Penyakit kardiovaskular","Umur melebihi 60 tahun","Obesiti","Sejarah keluarga penyakit buah pinggang","Episod kecederaan buah pinggang akut terdahulu","Penggunaan jangka panjang ubat nefrotoksik (contohnya penggunaan NSAID secara berkala)"],
+  s3_missed_title: "Mengapa ia terlepas pandang",
+  s3_missed_body: "Kerana CKD tidak menunjukkan gejala sepanjang kebanyakan peringkat awalnya, ia mudah tidak disedari pada pesakit yang sebaliknya berasa sihat. Perubahan paling berguna untuk penjagaan primer: mana-mana pesakit dengan diabetes, hipertensi, penyakit kardiovaskular, atau faktor risiko lain di atas harus diuji secara proaktif \u2014 bukan hanya mereka yang melaporkan gejala. Apabila gejala muncul, CKD selalunya telah berkembang ke peringkat yang lebih lanjut.",
+  screening_title: "Saringan CKD",
+  screening_intro: "Saringan CKD bergantung kepada dua ujian yang digunakan bersama: kadar penapisan glomerular anggaran (eGFR) dan nisbah albumin-kepada-kreatinin air kencing (uACR). Tiada satu pun sahaja memberikan gambaran lengkap \u2014 panduan KDIGO jelas menyatakan bahawa kedua-duanya harus digunakan bersama untuk menguji individu yang berisiko dan yang mempunyai CKD.",
+  screening_egfr_title: "eGFR \u2014 biasanya sudah tersedia",
+  screening_egfr_body: "eGFR tidak diukur secara langsung \u2014 ia dikira daripada kreatinin serum menggunakan formula yang disahkan yang turut mengambil kira umur dan jantina. Standard yang disyorkan pada masa ini ialah formula CKD-EPI kreatinin 2021, formula bebas bangsa yang disokong oleh KDIGO, National Kidney Foundation, dan American Society of Nephrology. Kerana kreatinin adalah sebahagian daripada panel darah rutin yang ditempah atas pelbagai sebab lain, eGFR selalunya sudah tersedia dalam rekod \u2014 atau boleh dikira terus daripada keputusan kreatinin menggunakan kalkulator di bawah.",
+  screening_uacr_title: "uACR \u2014 ujian yang sering terlepas pandang",
+  screening_uacr_body: "Berbeza dengan eGFR, uACR tidak berlaku secara automatik \u2014 ia memerlukan tempahan yang disengajakan. Kadar ujian uACR sentiasa ketinggalan jauh berbanding kadar ujian eGFR dalam populasi berisiko, walaupun ia adalah ujian yang lebih sensitif untuk mengesan kerosakan buah pinggang awal dalam keadaan seperti penyakit buah pinggang diabetik, di mana albuminuria selalunya muncul sebelum GFR menurun. Jalur ujian air kencing boleh digunakan sebagai alternatif yang lebih pantas dan mudah diakses, tetapi ia kurang sensitif dan boleh terlepas pandang julat albuminuria yang meningkat secara sederhana yang direka khas untuk dikesan oleh uACR.",
+  s4_title: "Garis Panduan & Sumber untuk Pengamal Perubatan Primer",
+  s4_intro: "Alat ini dibina berdasarkan sumber antarabangsa dan serantau berikut. Pasukan penjagaan primer digalakkan merujuk sumber ini secara langsung untuk butiran klinikal yang lengkap.",
+  s4_items: [
+    {title:"Garis Panduan Amalan Klinikal KDIGO 2024 untuk CKD", body:"Garis panduan Kidney Disease: Improving Global Outcomes (KDIGO) 2024 adalah rujukan antarabangsa utama untuk penilaian dan pengurusan CKD, mentakrifkan kategori GFR dan albuminuria yang digunakan untuk mengelaskan CKD dan menilai risiko yang menjadi asas alat ini.", url:"https://kdigo.org/guidelines/ckd-evaluation-and-management/"},
+    {title:"Rangka Kerja Garis Panduan untuk Pengurusan CKD di Asia", body:"Dibangunkan oleh panel pakar nefrologi Asia-Pasifik pelbagai negara, rangka kerja ini menyesuaikan garis panduan CKD antarabangsa kepada epidemiologi, sumber penjagaan kesihatan, dan kapasiti rujukan rantau \u2014 menangani jurang yang mengehadkan penggunaan garis panduan antarabangsa di banyak tempat penjagaan kesihatan Asia.", url:"https://www.kireports.org/article/S2468-0249(23)01632-7/fulltext"},
+    {title:"Kidney Health Australia \u2014 Buku Panduan Pengurusan CKD dalam Penjagaan Primer", body:"Disokong oleh Royal Australian College of General Practitioners dan badan nefrologi Australia dan New Zealand, buku panduan ini menyediakan panduan praktikal yang berfokuskan doktor am untuk mengesan, menguruskan, dan merujuk pesakit dengan CKD dalam persekitaran penjagaan primer Australia.", url:"https://kidney.org.au/health-professionals/ckd-management-handbook/"}
+  ],
+  symptom_checker_title: "Adakah pesakit ini mempunyai mana-mana faktor risiko atau gejala berikut?",
+  symptom_checker_intro: "Pilih semua yang berkenaan. Risiko CKD didorong terutamanya oleh keadaan asas berbanding gejala \u2014 ini adalah gesaan pantas, bukan penilaian berskor.",
+  symptom_prompt_positive: "Profil risiko ini konsisten dengan pesakit yang harus disaring untuk CKD, walaupun tanpa gejala. Pertimbangkan untuk menempah eGFR dan uACR sekarang.",
+  symptom_prompt_negative: "Tiada faktor risiko utama dipilih. Jika kecurigaan klinikal berterusan atas sebab lain, anda masih boleh meneruskan ke saringan.",
+  calc_title: "Kalkulator Gred Risiko CKD",
+  calc_subtitle: "Berdasarkan kategori GFR (G1\u2013G5) dan albuminuria (A1\u2013A3) KDIGO",
+  age_label: "Umur (tahun)",
+  sex_label: "Jantina",
+  male: "Lelaki",
+  female: "Perempuan",
+  creatinine_label: "Kreatinin serum (mg/dL)",
+  egfr_label: "eGFR yang Dikira",
+  uacr_label: "ACR air kencing (mg/g)",
+  uacr_hint: "Jika hanya keputusan jalur ujian tersedia, ambil perhatian bahawa keputusan negatif atau kesan kecil tidak dapat menyingkirkan secara boleh dipercayai albuminuria yang meningkat secara sederhana (A2) \u2014 uACR adalah ujian yang lebih sensitif.",
+  result_title: "Keputusan & Tindakan Disyorkan",
+  awaiting: "Masukkan semua nilai pesakit untuk mengira.",
+  egfr_result_lbl: "Kategori eGFR",
+  uacr_result_lbl: "Kategori albuminuria",
+  cat_low: "Risiko rendah",
+  cat_moderate: "Risiko meningkat sederhana",
+  cat_high: "Risiko tinggi",
+  cat_veryhigh: "Risiko sangat tinggi",
+  action_low: "Risiko rendah pada gred GFR/albuminuria. Jika ini adalah satu-satunya penanda kesihatan buah pinggang yang disemak dan tiada bukti kerosakan buah pinggang lain, ini tidak memenuhi kriteria untuk diagnosis CKD. Teruskan pengurusan faktor risiko rutin.",
+  action_moderate: "Risiko meningkat sederhana. Uruskan dalam penjagaan primer: tangani faktor risiko asas (tekanan darah, kawalan glisemik), dan ulang ujian setiap tahun.",
+  action_high: "Risiko tinggi. Teruskan pengurusan penjagaan primer dengan pemantauan yang lebih rapi; pertimbangkan rujukan nefrologi bergantung kepada trajektori, punca, dan komorbiditi.",
+  action_veryhigh: "Risiko sangat tinggi. Rujuk kepada nefrologi untuk penilaian lanjut, selaras dengan panduan rujukan berasaskan risiko KDIGO.",
+  threshold_note: "Kategori risiko (Rendah / Meningkat sederhana / Tinggi / Sangat tinggi) mengikut klasifikasi GFR \u00d7 albuminuria KDIGO yang diterbitkan. Alat ini menggunakan reka bentuk gred asal dan tidak menghasilkan semula rajah berhak cipta KDIGO. Pengiraan eGFR menggunakan formula CKD-EPI kreatinin 2021 dan tidak disahkan untuk kehamilan, jisim otot yang ekstrem, kecederaan buah pinggang akut, atau pesakit bawah 18 tahun. Alat ini menyokong, dan tidak menggantikan, pertimbangan klinikal.",
+  footer_disclaimer: "Penafian: Alat ini dibangunkan oleh pasukan Hal Ehwal Perubatan (Medical Affairs) Boehringer Ingelheim. Gred saringan ini berdasarkan klasifikasi CKD KDIGO, sistem pementasan yang disahkan dan diiktiraf secara antarabangsa, dan kandungan pendidikan berdasarkan rujukan awam yang sangat bereputasi serta sumber garis panduan serantau. Sumber ini merujuk garis panduan dan sistem klasifikasi yang tersedia secara umum; ini bukan perkongsian rasmi dengan organisasi yang dirujuk. Alat ini bukan pengganti pertimbangan klinikal atau garis panduan serantau semasa. Sahkan semua input dan output sebelum digunakan dalam penjagaan pesakit."
+}
+};
+
+
+let currentLang = 'en';
+
+function renderLanguage(lang){
+  currentLang = lang;
+  let t = T[lang];
+  if(!t){ t = T['en']; }
+
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.dataset.i18n;
+    if(t[key] !== undefined) el.textContent = t[key];
+  });
+
+  const symList = $('s3_symptoms_list');
+  symList.innerHTML = '';
+  t.s3_symptoms.forEach(item=>{ const li=document.createElement('li'); li.textContent=item; symList.appendChild(li); });
+
+  const riskList = $('s3_risk_list');
+  riskList.innerHTML = '';
+  t.s3_risk.forEach(item=>{ const li=document.createElement('li'); li.textContent=item; riskList.appendChild(li); });
+
+  const s4 = $('s4_items');
+  s4.innerHTML = '';
+  t.s4_items.forEach(item=>{
+    const div = document.createElement('div');
+    div.className = 's4-item';
+    const h4 = document.createElement('h4');
+    if(item.url){
+      const a = document.createElement('a');
+      a.href = item.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = item.title;
+      a.style.color = 'var(--dark)';
+      a.style.textDecoration = 'underline';
+      a.style.textDecorationColor = 'var(--brand)';
+      h4.appendChild(a);
+    } else {
+      h4.textContent = item.title;
+    }
+    const p = document.createElement('p'); p.textContent = item.body;
+    div.appendChild(h4); div.appendChild(p);
+    s4.appendChild(div);
+  });
+
+  $('footerDisclaimer').textContent = t.footer_disclaimer;
+
+  renderRiskChecklist(t);
+  buildGridViz();
+  calc();
+}
+
+function renderRiskChecklist(t){
+  const container = $('symptomCheckboxList');
+  container.innerHTML = '';
+  const items = t.s3_symptoms.concat(t.s3_risk);
+  items.forEach((label, i)=>{
+    const row = document.createElement('div');
+    row.className = 'risk-item';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.id = 'risk_'+i;
+    cb.addEventListener('change', updateSymptomPrompt);
+    const lbl = document.createElement('label');
+    lbl.setAttribute('for', 'risk_'+i);
+    lbl.textContent = label;
+    row.appendChild(cb); row.appendChild(lbl);
+    container.appendChild(row);
+  });
+  updateSymptomPrompt();
+}
+
+function updateSymptomPrompt(){
+  const t = T[currentLang];
+  const checked = document.querySelectorAll('#symptomCheckboxList input[type=checkbox]:checked').length;
+  const box = $('symptomPromptBox');
+  if(checked >= 2){
+    box.textContent = t.symptom_prompt_positive;
+    box.style.borderLeftColor = 'var(--veryhigh)';
+    box.style.background = '#FCEEEE';
+    box.style.color = '#7A2224';
+  } else {
+    box.textContent = t.symptom_prompt_negative;
+    box.style.borderLeftColor = 'var(--muted)';
+    box.style.background = '#F5F8F6';
+    box.style.color = 'var(--ink)';
+  }
+}
+
+$('langSelect').addEventListener('change', function(){ renderLanguage(this.value); });
+
+$('headerLogo').src = "data:image/png;base64,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";
+
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
+    $('panel-'+btn.dataset.tab).style.display='block';
+  });
+});
+function goToTab(tabName){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  document.querySelector('nav.tabs button[data-tab="'+tabName+'"]').classList.add('active');
+  document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
+  $('panel-'+tabName).style.display='block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+$('gotoCalcBtn').addEventListener('click', ()=> goToTab('symptoms'));
+$('gotoCalcFromSymptomsBtn').addEventListener('click', ()=> goToTab('calc'));
+
+$('sexSeg').querySelectorAll('button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    $('sexSeg').querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    calc();
+  });
+});
+function segVal(id){
+  const btn = $(id).querySelector('button.on');
+  return btn ? btn.dataset.v : null;
+}
+
+/* -------- eGFR: 2021 CKD-EPI creatinine equation (race-free) -------- */
+function calcEGFR(scr, age, sex){
+  const kappa = sex === 'f' ? 0.7 : 0.9;
+  const alpha = sex === 'f' ? -0.241 : -0.302;
+  const sexFactor = sex === 'f' ? 1.012 : 1.0;
+  const minTerm = Math.pow(Math.min(scr / kappa, 1), alpha);
+  const maxTerm = Math.pow(Math.max(scr / kappa, 1), -1.200);
+  return 142 * minTerm * maxTerm * Math.pow(0.9938, age) * sexFactor;
+}
+
+function gfrCategory(egfr){
+  if(egfr >= 90) return {code:'G1', order:0};
+  if(egfr >= 60) return {code:'G2', order:1};
+  if(egfr >= 45) return {code:'G3a', order:2};
+  if(egfr >= 30) return {code:'G3b', order:3};
+  if(egfr >= 15) return {code:'G4', order:4};
+  return {code:'G5', order:5};
+}
+function acrCategory(acr){
+  if(acr < 30) return {code:'A1', order:0};
+  if(acr <= 300) return {code:'A2', order:1};
+  return {code:'A3', order:2};
+}
+
+/* KDIGO risk grid: rows = G order 0..5, cols = A order 0..2 */
+const RISK_GRID = [
+  ['low','moderate','high'],       // G1
+  ['low','moderate','high'],       // G2
+  ['moderate','high','veryhigh'],  // G3a
+  ['high','veryhigh','veryhigh'],  // G3b
+  ['veryhigh','veryhigh','veryhigh'], // G4
+  ['veryhigh','veryhigh','veryhigh']  // G5
+];
+const G_ORDER = ['G1','G2','G3a','G3b','G4','G5'];
+const A_ORDER = ['A1','A2','A3'];
+
+function buildGridViz(){
+  const viz = $('gridViz');
+  viz.innerHTML = '';
+  const corner = document.createElement('div'); corner.className='lbl'; corner.textContent=''; viz.appendChild(corner);
+  A_ORDER.forEach(a=>{ const d=document.createElement('div'); d.className='lbl'; d.textContent=a; viz.appendChild(d); });
+  G_ORDER.forEach((g, gi)=>{
+    const rl = document.createElement('div'); rl.className='lbl'; rl.textContent=g; viz.appendChild(rl);
+    A_ORDER.forEach((a, ai)=>{
+      const cell = document.createElement('div');
+      cell.className = 'cell cell-'+RISK_GRID[gi][ai];
+      cell.id = 'cell_'+gi+'_'+ai;
+      cell.textContent = '';
+      viz.appendChild(cell);
+    });
+  });
+}
+
+function calc(){
+  const t = T[currentLang];
+  const ageStr = $('age').value;
+  const scrStr = $('creatinine').value;
+  const uacrStr = $('uacr').value;
+  const sex = segVal('sexSeg');
+
+  const age = parseFloat(ageStr);
+  const scr = parseFloat(scrStr);
+  let egfr = NaN;
+  if(!isNaN(age) && !isNaN(scr) && sex){
+    egfr = calcEGFR(scr, age, sex);
+  }
+  $('egfrOut').textContent = !isNaN(egfr) ? egfr.toFixed(0)+' mL/min/1.73m\u00B2' : '\u2014';
+
+  const complete = ageStr!=='' && scrStr!=='' && sex && uacrStr!=='';
+
+  document.querySelectorAll('.grid-viz .cell').forEach(c=>c.classList.remove('active'));
+
+  if(!complete){
+    $('ga_label').textContent = '\u2014 \u00b7 \u2014';
+    $('riskCat').textContent = '\u2014';
+    $('riskCat').className = 'risk-cat cat-neutral';
+    $('actionBox').innerHTML = t.awaiting;
+    $('egfrResultVal').textContent = '\u2014 mL/min/1.73m\u00B2';
+    $('uacrResultVal').textContent = '\u2014 mg/g';
+    return;
+  }
+
+  const uacr = parseFloat(uacrStr);
+  const g = gfrCategory(egfr);
+  const a = acrCategory(uacr);
+  const riskKey = RISK_GRID[g.order][a.order];
+
+  $('ga_label').textContent = g.code+' \u00b7 '+a.code;
+  $('egfrResultVal').textContent = egfr.toFixed(0)+' mL/min/1.73m\u00B2 ('+g.code+')';
+  $('uacrResultVal').textContent = uacr.toFixed(0)+' mg/g ('+a.code+')';
+
+  const activeCell = $('cell_'+g.order+'_'+a.order);
+  if(activeCell) activeCell.classList.add('active');
+
+  const catTextMap = {low:t.cat_low, moderate:t.cat_moderate, high:t.cat_high, veryhigh:t.cat_veryhigh};
+  const actionTextMap = {low:t.action_low, moderate:t.action_moderate, high:t.action_high, veryhigh:t.action_veryhigh};
+  const catClassMap = {low:'cat-low', moderate:'cat-moderate', high:'cat-high', veryhigh:'cat-veryhigh'};
+
+  $('riskCat').textContent = catTextMap[riskKey];
+  $('riskCat').className = 'risk-cat '+catClassMap[riskKey];
+  $('actionBox').innerHTML = '<b>'+catTextMap[riskKey]+'</b>'+actionTextMap[riskKey];
+}
+
+['age','creatinine','uacr'].forEach(id=>{
+  $(id).addEventListener('input', calc);
+});
+
+renderLanguage('en');
+</script>
+</body>
+</html>
