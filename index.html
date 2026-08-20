@@ -66,6 +66,16 @@
   }
   .cta-btn:hover{ background:var(--deep); }
 
+  .calc-actions{ display:flex; gap:10px; margin-top:18px; }
+  .calc-btn{
+    flex:1; border:none; padding:13px 18px; border-radius:12px;
+    font-weight:700; font-size:14px; cursor:pointer; font-family:'Inter',sans-serif;
+  }
+  .calc-btn.primary{ background:var(--dark); color:#fff; }
+  .calc-btn.primary:hover{ background:var(--deep); }
+  .calc-btn.secondary{ background:#fff; color:var(--dark); border:1.5px solid var(--line); }
+  .calc-btn.secondary:hover{ background:#F5F8F6; border-color:var(--brand); }
+
   .risk-item{ display:flex; align-items:flex-start; gap:10px; padding:11px 0; border-bottom:1px solid var(--line); }
   .risk-item:last-child{ border-bottom:none; }
   .risk-item input[type=checkbox]{ width:19px; height:19px; margin-top:1px; accent-color:var(--brand); flex:none; }
@@ -82,6 +92,9 @@
   .field{ display:flex; flex-direction:column; gap:5px; }
   .field.full{ grid-column:1 / -1; }
   .field label{ font-size:12px; font-weight:600; color:var(--ink); }
+  .field-warning{ font-size:11.5px; font-style:italic; color:#C0392B; margin-top:4px; display:none; }
+  .field-warning.show{ display:block; }
+  .field input.flagged{ border-color:#D8484C; background:#FCEFEF; }
   .field input[type=number]{
     border:1.5px solid var(--line); border-radius:10px; padding:10px 11px; font-size:15px;
     font-family:'IBM Plex Mono',monospace; color:var(--ink); background:#FBFCFB; outline:none; width:100%;
@@ -225,14 +238,22 @@
       <p class="hint" data-i18n="calc_subtitle"></p>
 
       <div class="field-row">
-        <div class="field"><label data-i18n="age_label"></label><input type="number" id="age" placeholder="e.g. 65"></div>
+        <div class="field">
+          <label data-i18n="age_label"></label>
+          <input type="number" id="age" placeholder="e.g. 65">
+          <span class="field-warning" id="ageWarn" data-i18n="age_check_msg"></span>
+        </div>
         <div class="field">
           <label data-i18n="sex_label"></label>
           <div class="seg" id="sexSeg"><button data-v="m" data-i18n="male"></button><button data-v="f" data-i18n="female"></button></div>
         </div>
       </div>
       <div class="field-row">
-        <div class="field"><label data-i18n="creatinine_label"></label><input type="number" id="creatinine" step="0.01" placeholder="e.g. 0.9"></div>
+        <div class="field">
+          <label data-i18n="creatinine_label"></label>
+          <input type="number" id="creatinine" step="0.01" placeholder="e.g. 0.9">
+          <span class="field-warning" id="creatinineWarn" data-i18n="creatinine_check_msg"></span>
+        </div>
         <div class="field">
           <label data-i18n="egfr_label"></label>
           <div class="mono" id="egfrOut" style="font-size:15px;color:var(--brand);font-weight:600;padding-top:8px;">—</div>
@@ -244,8 +265,13 @@
       <div class="field full">
         <label data-i18n="uacr_label"></label>
         <input type="number" id="uacr" placeholder="e.g. 15">
+        <span class="field-warning" id="uacrWarn" data-i18n="uacr_check_msg"></span>
       </div>
       <p class="hint" style="margin-top:8px;" data-i18n="uacr_hint"></p>
+      <div class="calc-actions">
+        <button class="calc-btn primary" id="calcBtn" data-i18n="btn_calculate"></button>
+        <button class="calc-btn secondary" id="resetBtn" data-i18n="btn_reset"></button>
+      </div>
     </div>
   </div>
 
@@ -325,12 +351,18 @@ en: {
   sex_label: "Sex",
   male: "Male",
   female: "Female",
+  btn_calculate: "Calculate",
+  btn_reset: "Reset",
   creatinine_label: "Serum creatinine (mg/dL)",
   egfr_label: "Calculated eGFR",
   uacr_label: "Urine ACR (mg/g)",
   uacr_hint: "If only a dipstick result is available, note that a negative or trace dipstick does not reliably rule out moderately increased albuminuria (A2) \u2014 uACR is the more sensitive test.",
   result_title: "Result & Recommended Action",
   awaiting: "Enter all patient values to calculate.",
+  check_values: "One or more values look unusual \u2014 please check the flagged fields before calculating.",
+  age_check_msg: "Please check this value \u2014 age is usually between 18 and 110.",
+  creatinine_check_msg: "Please check this value \u2014 creatinine is usually between 0.2 and 30 mg/dL.",
+  uacr_check_msg: "Please check this value \u2014 uACR is usually between 0 and 30,000 mg/g.",
   egfr_result_lbl: "eGFR category",
   uacr_result_lbl: "Albuminuria category",
   cat_low: "Low risk",
@@ -387,12 +419,18 @@ ko: {
   sex_label: "\uc131\ubcc4",
   male: "\ub0a8\uc131",
   female: "\uc5ec\uc131",
+  btn_calculate: "\uacc4\uc0b0\ud558\uae30",
+  btn_reset: "\ucd08\uae30\ud654",
   creatinine_label: "\ud600\uccad \ud06c\ub808\uc544\ud2f0\ub2cc (mg/dL)",
   egfr_label: "\uacc4\uc0b0\ub41c eGFR",
   uacr_label: "\uc694 ACR (mg/g)",
   uacr_hint: "\uc694 \uc2a4\ud2f1 \uacb0\uacfc\ub9cc \uc788\ub294 \uacbd\uc6b0, \uc74c\uc131 \ub610\ub294 \ubbf8\ub7c9 \uacb0\uacfc\uac00 \uc911\ub4f1\ub3c4 \uc99d\uac00\ub41c \ub2e8\ubc31\ub2c8\ub7c9(A2)\uc744 \uc2e0\ub8b0\ub3c4 \uc788\uac8c \ubc30\uc81c\ud558\uc9c0 \ubabb\ud55c\ub2e4\ub294 \uc810\uc744 \uc720\uc758\ud558\uc2ed\uc2dc\uc624 \u2014 uACR\uc774 \ub354 \ubbfc\uac10\ud55c \uac80\uc0ac\uc785\ub2c8\ub2e4.",
   result_title: "\uacb0\uacfc \ubc0f \uad8c\uc7a5 \uc870\uce58",
   awaiting: "\uacc4\uc0b0\ud558\ub824\uba74 \ubaa8\ub4e0 \ud658\uc790 \uac12\uc744 \uc785\ub825\ud558\uc2ed\uc2dc\uc624.",
+  check_values: "\ud558\ub098 \uc774\uc0c1\uc758 \uac12\uc774 \ube44\uc815\uc0c1\uc801\uc73c\ub85c \ubcf4\uc785\ub2c8\ub2e4 \u2014 \uacc4\uc0b0\ud558\uae30 \uc804\uc5d0 \ud45c\uc2dc\ub41c \ud56d\ubaa9\uc744 \ud655\uc778\ud558\uc2ed\uc2dc\uc624.",
+  age_check_msg: "\uc774 \uac12\uc744 \ud655\uc778\ud558\uc2ed\uc2dc\uc624 \u2014 \ub098\uc774\ub294 \uc77c\ubc18\uc801\uc73c\ub85c 18\uc138\uc5d0\uc11c 110\uc138 \uc0ac\uc774\uc785\ub2c8\ub2e4.",
+  creatinine_check_msg: "\uc774 \uac12\uc744 \ud655\uc778\ud558\uc2ed\uc2dc\uc624 \u2014 \ud06c\ub808\uc544\ud2f0\ub2cc\uc740 \uc77c\ubc18\uc801\uc73c\ub85c 0.2\uc5d0\uc11c 30 mg/dL \uc0ac\uc774\uc785\ub2c8\ub2e4.",
+  uacr_check_msg: "\uc774 \uac12\uc744 \ud655\uc778\ud558\uc2ed\uc2dc\uc624 \u2014 uACR\uc740 \uc77c\ubc18\uc801\uc73c\ub85c 0\uc5d0\uc11c 30,000 mg/g \uc0ac\uc774\uc785\ub2c8\ub2e4.",
   egfr_result_lbl: "eGFR \ubc94\uc8fc",
   uacr_result_lbl: "\ub2e8\ubc31\ub2c8\ub7c9 \ubc94\uc8fc",
   cat_low: "\ub0ae\uc740 \uc704\ud5d8\ub3c4",
@@ -449,12 +487,18 @@ th: {
   sex_label: "เพศ",
   male: "ชาย",
   female: "หญิง",
+  btn_calculate: "คำนวณ",
+  btn_reset: "รีเซ็ต",
   creatinine_label: "ครีเอตินินในเลือด (mg/dL)",
   egfr_label: "eGFR ที่คำนวณได้",
   uacr_label: "ACR ในปัสสาวะ (mg/g)",
   uacr_hint: "หากมีเพียงผลตรวจแถบทดสอบปัสสาวะ โปรดทราบว่าผลลบหรือผลเล็กน้อยไม่สามารถตัดความเป็นไปได้ของอัลบูมินในปัสสาวะระดับปานกลาง (A2) ได้อย่างน่าเชื่อถือ — uACR เป็นการตรวจที่ไวกว่า",
   result_title: "ผลลัพธ์และคำแนะนำการดำเนินการ",
   awaiting: "กรอกค่าของผู้ป่วยทั้งหมดเพื่อคำนวณ",
+  check_values: "ค่าอย่างน้อยหนึ่งค่าดูผิดปกติ — โปรดตรวจสอบช่องที่ถูกทำเครื่องหมายก่อนคำนวณ",
+  age_check_msg: "โปรดตรวจสอบค่านี้ — โดยทั่วไปอายุจะอยู่ระหว่าง 18 ถึง 110 ปี",
+  creatinine_check_msg: "โปรดตรวจสอบค่านี้ — โดยทั่วไปครีเอตินินจะอยู่ระหว่าง 0.2 ถึง 30 mg/dL",
+  uacr_check_msg: "โปรดตรวจสอบค่านี้ — โดยทั่วไป uACR จะอยู่ระหว่าง 0 ถึง 30,000 mg/g",
   egfr_result_lbl: "หมวด eGFR",
   uacr_result_lbl: "หมวดอัลบูมินในปัสสาวะ",
   cat_low: "ความเสี่ยงต่ำ",
@@ -511,12 +555,18 @@ vi: {
   sex_label: "Giới tính",
   male: "Nam",
   female: "Nữ",
+  btn_calculate: "Tính toán",
+  btn_reset: "Đặt lại",
   creatinine_label: "Creatinine huyết thanh (mg/dL)",
   egfr_label: "eGFR đã tính",
   uacr_label: "ACR niệu (mg/g)",
   uacr_hint: "Nếu chỉ có kết quả que thử nước tiểu, lưu ý rằng kết quả âm tính hoặc dấu vết không loại trừ đáng tin cậy albumin niệu tăng vừa phải (A2) \u2014 uACR là xét nghiệm nhạy hơn.",
   result_title: "Kết quả & Hành động Đề xuất",
   awaiting: "Nhập đầy đủ các giá trị của bệnh nhân để tính toán.",
+  check_values: "Một hoặc nhiều giá trị trông bất thường \u2014 vui lòng kiểm tra các trường được đánh dấu trước khi tính toán.",
+  age_check_msg: "Vui lòng kiểm tra giá trị này \u2014 tuổi thường trong khoảng 18 đến 110.",
+  creatinine_check_msg: "Vui lòng kiểm tra giá trị này \u2014 creatinine thường trong khoảng 0.2 đến 30 mg/dL.",
+  uacr_check_msg: "Vui lòng kiểm tra giá trị này \u2014 uACR thường trong khoảng 0 đến 30.000 mg/g.",
   egfr_result_lbl: "Mức eGFR",
   uacr_result_lbl: "Mức albumin niệu",
   cat_low: "Nguy cơ thấp",
@@ -573,12 +623,18 @@ zh: {
   sex_label: "性别",
   male: "男性",
   female: "女性",
+  btn_calculate: "计算",
+  btn_reset: "重置",
   creatinine_label: "血清肌酐（mg/dL）",
   egfr_label: "计算所得eGFR",
   uacr_label: "尿ACR（mg/g）",
   uacr_hint: "如仅有尿液试纸结果，请注意阴性或微量结果并不能可靠地排除中度升高的蛋白尿（A2）——uACR是更为敏感的检测。",
   result_title: "结果与建议措施",
   awaiting: "请输入所有患者数值以进行计算。",
+  check_values: "一个或多个数值看起来异常——请在计算前检查已标记的字段。",
+  age_check_msg: "请检查此数值——年龄通常在18至110岁之间。",
+  creatinine_check_msg: "请检查此数值——肌酐通常在0.2至30 mg/dL之间。",
+  uacr_check_msg: "请检查此数值——uACR通常在0至30,000 mg/g之间。",
   egfr_result_lbl: "eGFR 分级",
   uacr_result_lbl: "蛋白尿分级",
   cat_low: "低风险",
@@ -635,12 +691,18 @@ ms: {
   sex_label: "Jantina",
   male: "Lelaki",
   female: "Perempuan",
+  btn_calculate: "Kira",
+  btn_reset: "Set Semula",
   creatinine_label: "Kreatinin serum (mg/dL)",
   egfr_label: "eGFR yang Dikira",
   uacr_label: "ACR air kencing (mg/g)",
   uacr_hint: "Jika hanya keputusan jalur ujian tersedia, ambil perhatian bahawa keputusan negatif atau kesan kecil tidak dapat menyingkirkan secara boleh dipercayai albuminuria yang meningkat secara sederhana (A2) \u2014 uACR adalah ujian yang lebih sensitif.",
   result_title: "Keputusan & Tindakan Disyorkan",
   awaiting: "Masukkan semua nilai pesakit untuk mengira.",
+  check_values: "Satu atau lebih nilai kelihatan luar biasa \u2014 sila semak medan yang ditanda sebelum mengira.",
+  age_check_msg: "Sila semak nilai ini \u2014 umur biasanya antara 18 dan 110.",
+  creatinine_check_msg: "Sila semak nilai ini \u2014 kreatinin biasanya antara 0.2 dan 30 mg/dL.",
+  uacr_check_msg: "Sila semak nilai ini \u2014 uACR biasanya antara 0 dan 30,000 mg/g.",
   egfr_result_lbl: "Kategori eGFR",
   uacr_result_lbl: "Kategori albuminuria",
   cat_low: "Risiko rendah",
@@ -832,6 +894,38 @@ function buildGridViz(){
   });
 }
 
+/* Plausibility guard — catches likely typos (e.g. a stray extra digit), not a
+   published clinical validity boundary. Deliberately wide so no genuine severe
+   case ever gets silently blocked. */
+const PLAUSIBLE_BOUNDS = {
+  age: {min: 18, max: 110},
+  creatinine: {min: 0.2, max: 30},
+  uacr: {min: 0, max: 30000}
+};
+
+function checkPlausibility(fieldId, warnId){
+  const val = parseFloat($(fieldId).value);
+  const bounds = PLAUSIBLE_BOUNDS[fieldId];
+  const el = $(fieldId);
+  const warnEl = $(warnId);
+  if($(fieldId).value === '' || isNaN(val)){
+    el.classList.remove('flagged');
+    warnEl.classList.remove('show');
+    return true;
+  }
+  const outOfRange = val < bounds.min || val > bounds.max;
+  el.classList.toggle('flagged', outOfRange);
+  warnEl.classList.toggle('show', outOfRange);
+  return !outOfRange;
+}
+
+function checkAllPlausibility(){
+  const okAge = checkPlausibility('age', 'ageWarn');
+  const okCreatinine = checkPlausibility('creatinine', 'creatinineWarn');
+  const okUacr = checkPlausibility('uacr', 'uacrWarn');
+  return okAge && okCreatinine && okUacr;
+}
+
 function calc(){
   const t = T[currentLang];
   const ageStr = $('age').value;
@@ -848,14 +942,15 @@ function calc(){
   $('egfrOut').textContent = !isNaN(egfr) ? egfr.toFixed(0)+' mL/min/1.73m\u00B2' : '\u2014';
 
   const complete = ageStr!=='' && scrStr!=='' && sex && uacrStr!=='';
+  const plausible = checkAllPlausibility();
 
   document.querySelectorAll('.grid-viz .cell').forEach(c=>c.classList.remove('active'));
 
-  if(!complete){
+  if(!complete || !plausible){
     $('ga_label').textContent = '\u2014 \u00b7 \u2014';
     $('riskCat').textContent = '\u2014';
     $('riskCat').className = 'risk-cat cat-neutral';
-    $('actionBox').innerHTML = t.awaiting;
+    $('actionBox').innerHTML = !plausible ? t.check_values : t.awaiting;
     $('egfrResultVal').textContent = '\u2014 mL/min/1.73m\u00B2';
     $('uacrResultVal').textContent = '\u2014 mg/g';
     return;
@@ -884,6 +979,17 @@ function calc(){
 
 ['age','creatinine','uacr'].forEach(id=>{
   $(id).addEventListener('input', calc);
+});
+
+$('calcBtn').addEventListener('click', calc);
+$('resetBtn').addEventListener('click', function(){
+  $('age').value = '';
+  $('creatinine').value = '';
+  $('uacr').value = '';
+  $('sexSeg').querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+  ['age','creatinine','uacr'].forEach(id=>{ $(id).classList.remove('flagged'); });
+  ['ageWarn','creatinineWarn','uacrWarn'].forEach(id=>{ $(id).classList.remove('show'); });
+  calc();
 });
 
 renderLanguage('en');
