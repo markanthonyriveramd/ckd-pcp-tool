@@ -92,6 +92,14 @@
   .field{ display:flex; flex-direction:column; gap:5px; }
   .field.full{ grid-column:1 / -1; }
   .field label{ font-size:12px; font-weight:600; color:var(--ink); }
+  .label-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:5px; }
+  .unit-toggle{ display:flex; border:1.5px solid var(--line); border-radius:8px; overflow:hidden; flex:none; }
+  .unit-toggle button{
+    border:none; background:#FBFCFB; color:var(--muted); font-size:10.5px; font-weight:600;
+    padding:4px 7px; cursor:pointer; font-family:'Inter',sans-serif; border-right:1.5px solid var(--line);
+  }
+  .unit-toggle button:last-child{ border-right:none; }
+  .unit-toggle button.on{ background:var(--brand); color:#fff; }
   .field-warning{ font-size:11.5px; font-style:italic; color:#C0392B; margin-top:4px; display:none; }
   .field-warning.show{ display:block; }
   .field input.flagged{ border-color:#D8484C; background:#FCEFEF; }
@@ -250,7 +258,13 @@
       </div>
       <div class="field-row">
         <div class="field">
-          <label data-i18n="creatinine_label"></label>
+          <div class="label-row">
+            <label data-i18n="creatinine_label"></label>
+            <div class="unit-toggle" id="creatinineUnitSeg">
+              <button data-v="mgdl" class="on">mg/dL</button>
+              <button data-v="umol">µmol/L</button>
+            </div>
+          </div>
           <input type="number" id="creatinine" step="0.01" placeholder="e.g. 0.9">
           <span class="field-warning" id="creatinineWarn" data-i18n="creatinine_check_msg"></span>
         </div>
@@ -263,7 +277,13 @@
       <hr class="divider">
 
       <div class="field full">
-        <label data-i18n="uacr_label"></label>
+        <div class="label-row">
+          <label data-i18n="uacr_label"></label>
+          <div class="unit-toggle" id="uacrUnitSeg">
+            <button data-v="mgg" class="on">mg/g</button>
+            <button data-v="mgmmol">mg/mmol</button>
+          </div>
+        </div>
         <input type="number" id="uacr" placeholder="e.g. 15">
         <span class="field-warning" id="uacrWarn" data-i18n="uacr_check_msg"></span>
       </div>
@@ -353,9 +373,9 @@ en: {
   female: "Female",
   btn_calculate: "Calculate",
   btn_reset: "Reset",
-  creatinine_label: "Serum creatinine (mg/dL)",
+  creatinine_label: "Serum creatinine",
   egfr_label: "Calculated eGFR",
-  uacr_label: "Urine ACR (mg/g)",
+  uacr_label: "Urine ACR",
   uacr_hint: "If only a dipstick result is available, note that a negative or trace dipstick does not reliably rule out moderately increased albuminuria (A2) \u2014 uACR is the more sensitive test.",
   result_title: "Result & Recommended Action",
   awaiting: "Enter all patient values to calculate.",
@@ -421,9 +441,9 @@ ko: {
   female: "\uc5ec\uc131",
   btn_calculate: "\uacc4\uc0b0\ud558\uae30",
   btn_reset: "\ucd08\uae30\ud654",
-  creatinine_label: "\ud600\uccad \ud06c\ub808\uc544\ud2f0\ub2cc (mg/dL)",
+  creatinine_label: "\ud600\uccad \ud06c\ub808\uc544\ud2f0\ub2cc",
   egfr_label: "\uacc4\uc0b0\ub41c eGFR",
-  uacr_label: "\uc694 ACR (mg/g)",
+  uacr_label: "\uc694 ACR",
   uacr_hint: "\uc694 \uc2a4\ud2f1 \uacb0\uacfc\ub9cc \uc788\ub294 \uacbd\uc6b0, \uc74c\uc131 \ub610\ub294 \ubbf8\ub7c9 \uacb0\uacfc\uac00 \uc911\ub4f1\ub3c4 \uc99d\uac00\ub41c \ub2e8\ubc31\ub2c8\ub7c9(A2)\uc744 \uc2e0\ub8b0\ub3c4 \uc788\uac8c \ubc30\uc81c\ud558\uc9c0 \ubabb\ud55c\ub2e4\ub294 \uc810\uc744 \uc720\uc758\ud558\uc2ed\uc2dc\uc624 \u2014 uACR\uc774 \ub354 \ubbfc\uac10\ud55c \uac80\uc0ac\uc785\ub2c8\ub2e4.",
   result_title: "\uacb0\uacfc \ubc0f \uad8c\uc7a5 \uc870\uce58",
   awaiting: "\uacc4\uc0b0\ud558\ub824\uba74 \ubaa8\ub4e0 \ud658\uc790 \uac12\uc744 \uc785\ub825\ud558\uc2ed\uc2dc\uc624.",
@@ -489,9 +509,9 @@ th: {
   female: "หญิง",
   btn_calculate: "คำนวณ",
   btn_reset: "รีเซ็ต",
-  creatinine_label: "ครีเอตินินในเลือด (mg/dL)",
+  creatinine_label: "ครีเอตินินในเลือด",
   egfr_label: "eGFR ที่คำนวณได้",
-  uacr_label: "ACR ในปัสสาวะ (mg/g)",
+  uacr_label: "ACR ในปัสสาวะ",
   uacr_hint: "หากมีเพียงผลตรวจแถบทดสอบปัสสาวะ โปรดทราบว่าผลลบหรือผลเล็กน้อยไม่สามารถตัดความเป็นไปได้ของอัลบูมินในปัสสาวะระดับปานกลาง (A2) ได้อย่างน่าเชื่อถือ — uACR เป็นการตรวจที่ไวกว่า",
   result_title: "ผลลัพธ์และคำแนะนำการดำเนินการ",
   awaiting: "กรอกค่าของผู้ป่วยทั้งหมดเพื่อคำนวณ",
@@ -557,9 +577,9 @@ vi: {
   female: "Nữ",
   btn_calculate: "Tính toán",
   btn_reset: "Đặt lại",
-  creatinine_label: "Creatinine huyết thanh (mg/dL)",
+  creatinine_label: "Creatinine huyết thanh",
   egfr_label: "eGFR đã tính",
-  uacr_label: "ACR niệu (mg/g)",
+  uacr_label: "ACR niệu",
   uacr_hint: "Nếu chỉ có kết quả que thử nước tiểu, lưu ý rằng kết quả âm tính hoặc dấu vết không loại trừ đáng tin cậy albumin niệu tăng vừa phải (A2) \u2014 uACR là xét nghiệm nhạy hơn.",
   result_title: "Kết quả & Hành động Đề xuất",
   awaiting: "Nhập đầy đủ các giá trị của bệnh nhân để tính toán.",
@@ -625,9 +645,9 @@ zh: {
   female: "女性",
   btn_calculate: "计算",
   btn_reset: "重置",
-  creatinine_label: "血清肌酐（mg/dL）",
+  creatinine_label: "血清肌酐",
   egfr_label: "计算所得eGFR",
-  uacr_label: "尿ACR（mg/g）",
+  uacr_label: "尿ACR",
   uacr_hint: "如仅有尿液试纸结果，请注意阴性或微量结果并不能可靠地排除中度升高的蛋白尿（A2）——uACR是更为敏感的检测。",
   result_title: "结果与建议措施",
   awaiting: "请输入所有患者数值以进行计算。",
@@ -693,9 +713,9 @@ ms: {
   female: "Perempuan",
   btn_calculate: "Kira",
   btn_reset: "Set Semula",
-  creatinine_label: "Kreatinin serum (mg/dL)",
+  creatinine_label: "Kreatinin serum",
   egfr_label: "eGFR yang Dikira",
-  uacr_label: "ACR air kencing (mg/g)",
+  uacr_label: "ACR air kencing",
   uacr_hint: "Jika hanya keputusan jalur ujian tersedia, ambil perhatian bahawa keputusan negatif atau kesan kecil tidak dapat menyingkirkan secara boleh dipercayai albuminuria yang meningkat secara sederhana (A2) \u2014 uACR adalah ujian yang lebih sensitif.",
   result_title: "Keputusan & Tindakan Disyorkan",
   awaiting: "Masukkan semua nilai pesakit untuk mengira.",
@@ -897,18 +917,35 @@ function buildGridViz(){
 /* Plausibility guard — catches likely typos (e.g. a stray extra digit), not a
    published clinical validity boundary. Deliberately wide so no genuine severe
    case ever gets silently blocked. */
+const CREATININE_UMOL_PER_MGDL = 88.4;
+const UACR_MGG_PER_MGMMOL = 8.84;
+
+function getCreatinineMgDl(){
+  const raw = parseFloat($('creatinine').value);
+  if(isNaN(raw)) return NaN;
+  const unit = segVal('creatinineUnitSeg');
+  return unit === 'umol' ? raw / CREATININE_UMOL_PER_MGDL : raw;
+}
+function getUacrMgG(){
+  const raw = parseFloat($('uacr').value);
+  if(isNaN(raw)) return NaN;
+  const unit = segVal('uacrUnitSeg');
+  return unit === 'mgmmol' ? raw * UACR_MGG_PER_MGMMOL : raw;
+}
+
 const PLAUSIBLE_BOUNDS = {
   age: {min: 18, max: 110},
   creatinine: {min: 0.2, max: 30},
   uacr: {min: 0, max: 30000}
 };
 
-function checkPlausibility(fieldId, warnId){
-  const val = parseFloat($(fieldId).value);
-  const bounds = PLAUSIBLE_BOUNDS[fieldId];
+function checkPlausibility(fieldId, warnId, convertedVal){
   const el = $(fieldId);
   const warnEl = $(warnId);
-  if($(fieldId).value === '' || isNaN(val)){
+  const rawEmpty = $(fieldId).value === '';
+  const bounds = PLAUSIBLE_BOUNDS[fieldId];
+  const val = convertedVal !== undefined ? convertedVal : parseFloat($(fieldId).value);
+  if(rawEmpty || isNaN(val)){
     el.classList.remove('flagged');
     warnEl.classList.remove('show');
     return true;
@@ -921,8 +958,8 @@ function checkPlausibility(fieldId, warnId){
 
 function checkAllPlausibility(){
   const okAge = checkPlausibility('age', 'ageWarn');
-  const okCreatinine = checkPlausibility('creatinine', 'creatinineWarn');
-  const okUacr = checkPlausibility('uacr', 'uacrWarn');
+  const okCreatinine = checkPlausibility('creatinine', 'creatinineWarn', getCreatinineMgDl());
+  const okUacr = checkPlausibility('uacr', 'uacrWarn', getUacrMgG());
   return okAge && okCreatinine && okUacr;
 }
 
@@ -934,7 +971,7 @@ function calc(){
   const sex = segVal('sexSeg');
 
   const age = parseFloat(ageStr);
-  const scr = parseFloat(scrStr);
+  const scr = getCreatinineMgDl();
   let egfr = NaN;
   if(!isNaN(age) && !isNaN(scr) && sex){
     egfr = calcEGFR(scr, age, sex);
@@ -956,14 +993,16 @@ function calc(){
     return;
   }
 
-  const uacr = parseFloat(uacrStr);
+  const uacr = getUacrMgG();
   const g = gfrCategory(egfr);
   const a = acrCategory(uacr);
   const riskKey = RISK_GRID[g.order][a.order];
 
   $('ga_label').textContent = g.code+' \u00b7 '+a.code;
   $('egfrResultVal').textContent = egfr.toFixed(0)+' mL/min/1.73m\u00B2 ('+g.code+')';
-  $('uacrResultVal').textContent = uacr.toFixed(0)+' mg/g ('+a.code+')';
+  const uacrUnit = segVal('uacrUnitSeg');
+  const uacrDisplay = uacrUnit === 'mgmmol' ? (uacr / UACR_MGG_PER_MGMMOL).toFixed(2)+' mg/mmol' : uacr.toFixed(0)+' mg/g';
+  $('uacrResultVal').textContent = uacrDisplay+' ('+a.code+')';
 
   const activeCell = $('cell_'+g.order+'_'+a.order);
   if(activeCell) activeCell.classList.add('active');
@@ -989,7 +1028,28 @@ $('resetBtn').addEventListener('click', function(){
   $('sexSeg').querySelectorAll('button').forEach(b=>b.classList.remove('on'));
   ['age','creatinine','uacr'].forEach(id=>{ $(id).classList.remove('flagged'); });
   ['ageWarn','creatinineWarn','uacrWarn'].forEach(id=>{ $(id).classList.remove('show'); });
+  $('creatinineUnitSeg').querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+  $('creatinineUnitSeg').querySelector('button[data-v="mgdl"]').classList.add('on');
+  $('creatinine').placeholder = 'e.g. 0.9';
+  $('uacrUnitSeg').querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+  $('uacrUnitSeg').querySelector('button[data-v="mgg"]').classList.add('on');
+  $('uacr').placeholder = 'e.g. 15';
   calc();
+});
+
+['creatinineUnitSeg','uacrUnitSeg'].forEach(segId=>{
+  $(segId).querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      $(segId).querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on');
+      if(segId === 'creatinineUnitSeg'){
+        $('creatinine').placeholder = btn.dataset.v === 'umol' ? 'e.g. 80' : 'e.g. 0.9';
+      } else {
+        $('uacr').placeholder = btn.dataset.v === 'mgmmol' ? 'e.g. 1.7' : 'e.g. 15';
+      }
+      calc();
+    });
+  });
 });
 
 renderLanguage('en');
