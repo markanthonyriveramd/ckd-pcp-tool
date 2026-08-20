@@ -787,7 +787,8 @@ function renderLanguage(lang){
 
   renderRiskChecklist(t);
   buildGridViz();
-  calc();
+  updateEgfrDisplay();
+  showAwaitingState();
 }
 
 function renderRiskChecklist(t){
@@ -853,7 +854,8 @@ $('sexSeg').querySelectorAll('button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     $('sexSeg').querySelectorAll('button').forEach(b=>b.classList.remove('on'));
     btn.classList.add('on');
-    calc();
+    updateEgfrDisplay();
+    showAwaitingState();
   });
 });
 function segVal(id){
@@ -963,6 +965,29 @@ function checkAllPlausibility(){
   return okAge && okCreatinine && okUacr;
 }
 
+function updateEgfrDisplay(){
+  const age = parseFloat($('age').value);
+  const scr = getCreatinineMgDl();
+  const sex = segVal('sexSeg');
+  let egfr = NaN;
+  if(!isNaN(age) && !isNaN(scr) && sex){
+    egfr = calcEGFR(scr, age, sex);
+  }
+  $('egfrOut').textContent = !isNaN(egfr) ? egfr.toFixed(0)+' mL/min/1.73m\u00B2' : '\u2014';
+  checkAllPlausibility();
+}
+
+function showAwaitingState(){
+  const t = T[currentLang];
+  document.querySelectorAll('.grid-viz .cell').forEach(c=>c.classList.remove('active'));
+  $('ga_label').textContent = '\u2014 \u00b7 \u2014';
+  $('riskCat').textContent = '\u2014';
+  $('riskCat').className = 'risk-cat cat-neutral';
+  $('actionBox').innerHTML = t.awaiting;
+  $('egfrResultVal').textContent = '\u2014 mL/min/1.73m\u00B2';
+  $('uacrResultVal').textContent = '\u2014 mg/g';
+}
+
 function calc(){
   const t = T[currentLang];
   const ageStr = $('age').value;
@@ -1016,9 +1041,10 @@ function calc(){
   $('actionBox').innerHTML = '<b>'+catTextMap[riskKey]+'</b>'+actionTextMap[riskKey];
 }
 
-['age','creatinine','uacr'].forEach(id=>{
-  $(id).addEventListener('input', calc);
+['age','creatinine'].forEach(id=>{
+  $(id).addEventListener('input', ()=>{ updateEgfrDisplay(); showAwaitingState(); });
 });
+$('uacr').addEventListener('input', ()=>{ checkAllPlausibility(); showAwaitingState(); });
 
 $('calcBtn').addEventListener('click', calc);
 $('resetBtn').addEventListener('click', function(){
@@ -1034,7 +1060,8 @@ $('resetBtn').addEventListener('click', function(){
   $('uacrUnitSeg').querySelectorAll('button').forEach(b=>b.classList.remove('on'));
   $('uacrUnitSeg').querySelector('button[data-v="mgg"]').classList.add('on');
   $('uacr').placeholder = 'e.g. 15';
-  calc();
+  updateEgfrDisplay();
+  showAwaitingState();
 });
 
 ['creatinineUnitSeg','uacrUnitSeg'].forEach(segId=>{
@@ -1044,10 +1071,12 @@ $('resetBtn').addEventListener('click', function(){
       btn.classList.add('on');
       if(segId === 'creatinineUnitSeg'){
         $('creatinine').placeholder = btn.dataset.v === 'umol' ? 'e.g. 80' : 'e.g. 0.9';
+        updateEgfrDisplay();
       } else {
         $('uacr').placeholder = btn.dataset.v === 'mgmmol' ? 'e.g. 1.7' : 'e.g. 15';
+        checkAllPlausibility();
       }
-      calc();
+      showAwaitingState();
     });
   });
 });
